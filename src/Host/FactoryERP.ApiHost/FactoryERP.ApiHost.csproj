@@ -1,0 +1,61 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <!-- Web host doesn't ship a public API — suppress the resx glob error from Directory.Build.props -->
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MassTransit" />
+    <PackageReference Include="MassTransit.EntityFrameworkCore" />
+    <PackageReference Include="MassTransit.RabbitMQ" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+    <PackageReference Include="Serilog" />
+    <PackageReference Include="Serilog.AspNetCore" />
+    <PackageReference Include="Serilog.Enrichers.Environment" />
+    <PackageReference Include="Serilog.Enrichers.Thread" />
+    <PackageReference Include="Serilog.Extensions.Hosting" />
+    <PackageReference Include="Serilog.Settings.Configuration" />
+    <PackageReference Include="Serilog.Sinks.Console" />
+    <PackageReference Include="Serilog.Sinks.File" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Swagger" />
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" />
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" />
+    <PackageReference Include="Microsoft.OpenApi" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Modules\Admin\Admin.Infrastructure\Admin.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Modules\Costing\Costing.Infrastructure\Costing.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Modules\EDI\EDI.Infrastructure\EDI.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Modules\Inventory\Inventory.Infrastructure\Inventory.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Modules\Labeling\Labeling.Infrastructure\Labeling.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Modules\Production\Production.Infrastructure\Production.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Modules\Purchasing\Purchasing.Infrastructure\Purchasing.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Modules\Quality\Quality.Infrastructure\Quality.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Modules\Sales\Sales.Api\Sales.Api.csproj" />
+    <ProjectReference Include="..\..\Modules\Production\Production.Api\Production.Api.csproj" />
+    <ProjectReference Include="..\..\Modules\Purchasing\Purchasing.Api\Purchasing.Api.csproj" />
+    <ProjectReference Include="..\..\Modules\Inventory\Inventory.Api\Inventory.Api.csproj" />
+    <ProjectReference Include="..\..\Modules\Costing\Costing.Api\Costing.Api.csproj" />
+    <ProjectReference Include="..\..\Modules\Quality\Quality.Api\Quality.Api.csproj" />
+    <ProjectReference Include="..\..\Modules\Admin\Admin.Api\Admin.Api.csproj" />
+    <ProjectReference Include="..\..\Modules\EDI\EDI.Api\EDI.Api.csproj" />
+    <ProjectReference Include="..\..\Modules\Labeling\Labeling.Api\Labeling.Api.csproj" />
+    <ProjectReference Include="..\..\Modules\Auth\Auth.Api\Auth.Api.csproj" />
+    <ProjectReference Include="..\..\Modules\Auth\Auth.Infrastructure\Auth.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Modules\Sales\Sales.Infrastructure\Sales.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Logs\" />
+  </ItemGroup>
+
+</Project>

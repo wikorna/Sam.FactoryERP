@@ -1,0 +1,25 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 2
+
+[*.cs]
+indent_size = 4
+tab_width = 4
+dotnet_language_version = latest_major
+
+# CA5359: Certificate validation bypass is config-gated (AllowInvalidCertificate=true, dev/test only).
+# The bypass is inside a named method with guard logic, not an anonymous lambda.
+[**/Email/Sending/MailKitSmtpEmailSender.cs]
+dotnet_diagnostic.CA5359.severity = warning
+
+[*.json]
+indent_size = 2
+
+[*.sh]
+indent_size = 2

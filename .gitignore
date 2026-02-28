@@ -1,0 +1,26 @@
+# .NET
+bin/
+obj/
+**/bin/
+**/obj/
+
+# VS / Rider
+.vs/
+.idea/
+*.user
+*.suo
+
+# macOS
+.DS_Store
+
+# Logs
+*.log
+
+# Secrets
+.env
+**/*.pfx
+**/*.pem
+**/*secrets*.json
+
+# Docker override
+docker-compose.override.yml

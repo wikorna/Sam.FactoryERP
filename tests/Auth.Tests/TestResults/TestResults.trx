@@ -1,0 +1,104 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="1975f81e-e6c7-4d2b-9d9e-43eb4c3ffc6c" name="@Wikorns-MacBook-Pro 2026-02-25 17:08:20" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-02-25T17:08:20.5406490+07:00" queuing="2026-02-25T17:08:20.5406500+07:00" start="2026-02-25T17:08:18.2927550+07:00" finish="2026-02-25T17:08:20.5667740+07:00" />
+  <TestSettings name="default" id="53792c30-71e2-4009-8bd8-14800f900eb2">
+    <Deployment runDeploymentRoot="_Wikorns-MacBook-Pro_2026-02-25_17_08_20" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="70dc84eb-28b7-4672-8a60-d867dcaa40b8" testId="6c571c91-d42a-f5c3-21f2-71c019d7d2dc" testName="Auth.Tests.LoginCommandHandlerTests.Handle_UserInactive_ReturnsFail" computerName="Wikorns-MacBook-Pro" duration="00:00:00.0031091" startTime="2026-02-25T17:08:20.3319920+07:00" endTime="2026-02-25T17:08:20.3321490+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="70dc84eb-28b7-4672-8a60-d867dcaa40b8" />
+    <UnitTestResult executionId="2cd5911a-80fb-445a-9d88-8967f72c9ec7" testId="d8a6daad-aa22-52d6-9735-9b73d2241e5d" testName="Auth.Tests.LoginCommandHandlerTests.Handle_WrongPassword_CausesLockout_ReturnsFail_WithZeroRemaining" computerName="Wikorns-MacBook-Pro" duration="00:00:00.0024305" startTime="2026-02-25T17:08:20.2515730+07:00" endTime="2026-02-25T17:08:20.2519470+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="2cd5911a-80fb-445a-9d88-8967f72c9ec7" />
+    <UnitTestResult executionId="ba57d854-fa8a-4198-8eba-e04216bfa67c" testId="c62d9288-29ae-9e0a-2ffe-85571edc8e48" testName="Auth.Tests.LoginCommandHandlerTests.Handle_UserLockedOut_ReturnsFail_WithLockoutMetadata" computerName="Wikorns-MacBook-Pro" duration="00:00:00.0061986" startTime="2026-02-25T17:08:20.2499390+07:00" endTime="2026-02-25T17:08:20.2501890+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="ba57d854-fa8a-4198-8eba-e04216bfa67c" />
+    <UnitTestResult executionId="44eb39a3-1fcb-4c17-8ddd-46f9b41d22bb" testId="5f34a576-0afb-1c11-96b8-efd5246e350b" testName="Auth.Tests.LoginCommandHandlerTests.Handle_UserNotFound_ReturnsGenericFail_AndPerformsDummyHash" computerName="Wikorns-MacBook-Pro" duration="00:00:00.0083006" startTime="2026-02-25T17:08:20.2512100+07:00" endTime="2026-02-25T17:08:20.2513590+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="44eb39a3-1fcb-4c17-8ddd-46f9b41d22bb" />
+    <UnitTestResult executionId="e1e64c96-986b-42f6-90f6-8797693160b9" testId="8d1e7d38-ad62-c2a2-176a-2b212f3b6132" testName="Auth.Tests.LoginCommandHandlerTests.Handle_ValidCredentials_ReturnsTokens_AndPersistsRefreshToken" computerName="Wikorns-MacBook-Pro" duration="00:00:00.0656154" startTime="2026-02-25T17:08:20.2521740+07:00" endTime="2026-02-25T17:08:20.3218220+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="e1e64c96-986b-42f6-90f6-8797693160b9">
+      <Output>
+        <ErrorInfo>
+          <Message>Expected result.IsSuccess to be True, but found False.</Message>
+          <StackTrace>   at FluentAssertions.Execution.LateBoundTestFramework.Throw(String message)
+   at FluentAssertions.Execution.DefaultAssertionStrategy.HandleFailure(String message)
+   at FluentAssertions.Execution.AssertionScope.AddPreFormattedFailure(String formattedFailureMessage)
+   at FluentAssertions.Execution.AssertionChain.FailWith(Func`1 getFailureReason)
+   at FluentAssertions.Execution.AssertionChain.FailWith(Func`1 getFailureReason)
+   at FluentAssertions.Execution.AssertionChain.FailWith(String message, Object[] args)
+   at FluentAssertions.Primitives.BooleanAssertions`1.BeTrue(String because, Object[] becauseArgs)
+   at Auth.Tests.LoginCommandHandlerTests.Handle_ValidCredentials_ReturnsTokens_AndPersistsRefreshToken() in /Users/wikorn/Repos/Workspace/personal/Sam.FactoryERP/tests/Auth.Tests/LoginCommandHandlerTests.cs:line 222
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="c25b3753-474e-4090-bb36-0a5c59293c1c" testId="06a0561f-40aa-301e-da82-ff2953332d8e" testName="Auth.Tests.LoginCommandHandlerTests.Handle_WrongPassword_NotLocked_ReturnsFail_WithRemainingAttempts" computerName="Wikorns-MacBook-Pro" duration="00:00:00.3010223" startTime="2026-02-25T17:08:19.9232450+07:00" endTime="2026-02-25T17:08:20.2341630+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="c25b3753-474e-4090-bb36-0a5c59293c1c" />
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="Auth.Tests.LoginCommandHandlerTests.Handle_UserLockedOut_ReturnsFail_WithLockoutMetadata" storage="/users/wikorn/repos/workspace/personal/sam.factoryerp/tests/auth.tests/bin/debug/net10.0/auth.tests.dll" id="c62d9288-29ae-9e0a-2ffe-85571edc8e48">
+      <Execution id="ba57d854-fa8a-4198-8eba-e04216bfa67c" />
+      <TestMethod codeBase="/Users/wikorn/Repos/Workspace/personal/Sam.FactoryERP/tests/Auth.Tests/bin/Debug/net10.0/Auth.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="Auth.Tests.LoginCommandHandlerTests" name="Handle_UserLockedOut_ReturnsFail_WithLockoutMetadata" />
+    </UnitTest>
+    <UnitTest name="Auth.Tests.LoginCommandHandlerTests.Handle_UserNotFound_ReturnsGenericFail_AndPerformsDummyHash" storage="/users/wikorn/repos/workspace/personal/sam.factoryerp/tests/auth.tests/bin/debug/net10.0/auth.tests.dll" id="5f34a576-0afb-1c11-96b8-efd5246e350b">
+      <Execution id="44eb39a3-1fcb-4c17-8ddd-46f9b41d22bb" />
+      <TestMethod codeBase="/Users/wikorn/Repos/Workspace/personal/Sam.FactoryERP/tests/Auth.Tests/bin/Debug/net10.0/Auth.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="Auth.Tests.LoginCommandHandlerTests" name="Handle_UserNotFound_ReturnsGenericFail_AndPerformsDummyHash" />
+    </UnitTest>
+    <UnitTest name="Auth.Tests.LoginCommandHandlerTests.Handle_WrongPassword_CausesLockout_ReturnsFail_WithZeroRemaining" storage="/users/wikorn/repos/workspace/personal/sam.factoryerp/tests/auth.tests/bin/debug/net10.0/auth.tests.dll" id="d8a6daad-aa22-52d6-9735-9b73d2241e5d">
+      <Execution id="2cd5911a-80fb-445a-9d88-8967f72c9ec7" />
+      <TestMethod codeBase="/Users/wikorn/Repos/Workspace/personal/Sam.FactoryERP/tests/Auth.Tests/bin/Debug/net10.0/Auth.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="Auth.Tests.LoginCommandHandlerTests" name="Handle_WrongPassword_CausesLockout_ReturnsFail_WithZeroRemaining" />
+    </UnitTest>
+    <UnitTest name="Auth.Tests.LoginCommandHandlerTests.Handle_WrongPassword_NotLocked_ReturnsFail_WithRemainingAttempts" storage="/users/wikorn/repos/workspace/personal/sam.factoryerp/tests/auth.tests/bin/debug/net10.0/auth.tests.dll" id="06a0561f-40aa-301e-da82-ff2953332d8e">
+      <Execution id="c25b3753-474e-4090-bb36-0a5c59293c1c" />
+      <TestMethod codeBase="/Users/wikorn/Repos/Workspace/personal/Sam.FactoryERP/tests/Auth.Tests/bin/Debug/net10.0/Auth.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="Auth.Tests.LoginCommandHandlerTests" name="Handle_WrongPassword_NotLocked_ReturnsFail_WithRemainingAttempts" />
+    </UnitTest>
+    <UnitTest name="Auth.Tests.LoginCommandHandlerTests.Handle_UserInactive_ReturnsFail" storage="/users/wikorn/repos/workspace/personal/sam.factoryerp/tests/auth.tests/bin/debug/net10.0/auth.tests.dll" id="6c571c91-d42a-f5c3-21f2-71c019d7d2dc">
+      <Execution id="70dc84eb-28b7-4672-8a60-d867dcaa40b8" />
+      <TestMethod codeBase="/Users/wikorn/Repos/Workspace/personal/Sam.FactoryERP/tests/Auth.Tests/bin/Debug/net10.0/Auth.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="Auth.Tests.LoginCommandHandlerTests" name="Handle_UserInactive_ReturnsFail" />
+    </UnitTest>
+    <UnitTest name="Auth.Tests.LoginCommandHandlerTests.Handle_ValidCredentials_ReturnsTokens_AndPersistsRefreshToken" storage="/users/wikorn/repos/workspace/personal/sam.factoryerp/tests/auth.tests/bin/debug/net10.0/auth.tests.dll" id="8d1e7d38-ad62-c2a2-176a-2b212f3b6132">
+      <Execution id="e1e64c96-986b-42f6-90f6-8797693160b9" />
+      <TestMethod codeBase="/Users/wikorn/Repos/Workspace/personal/Sam.FactoryERP/tests/Auth.Tests/bin/Debug/net10.0/Auth.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="Auth.Tests.LoginCommandHandlerTests" name="Handle_ValidCredentials_ReturnsTokens_AndPersistsRefreshToken" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="6c571c91-d42a-f5c3-21f2-71c019d7d2dc" executionId="70dc84eb-28b7-4672-8a60-d867dcaa40b8" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="d8a6daad-aa22-52d6-9735-9b73d2241e5d" executionId="2cd5911a-80fb-445a-9d88-8967f72c9ec7" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="c62d9288-29ae-9e0a-2ffe-85571edc8e48" executionId="ba57d854-fa8a-4198-8eba-e04216bfa67c" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="5f34a576-0afb-1c11-96b8-efd5246e350b" executionId="44eb39a3-1fcb-4c17-8ddd-46f9b41d22bb" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="8d1e7d38-ad62-c2a2-176a-2b212f3b6132" executionId="e1e64c96-986b-42f6-90f6-8797693160b9" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="06a0561f-40aa-301e-da82-ff2953332d8e" executionId="c25b3753-474e-4090-bb36-0a5c59293c1c" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Failed">
+    <Counters total="6" executed="6" passed="5" failed="1" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v3.1.5+1b188a7b0a (64-bit .NET 10.0.3)
+[xUnit.net 00:00:00.16]   Discovering: Auth.Tests
+[xUnit.net 00:00:00.23]   Discovered:  Auth.Tests
+[xUnit.net 00:00:00.28]   Starting:    Auth.Tests
+     Warning:
+     The component "Fluent Assertions" is governed by the rules defined in the Xceed License Agreement and
+     the Xceed Fluent Assertions Community License. You may use Fluent Assertions free of charge for
+     non-commercial use only. An active subscription is required to use Fluent Assertions for commercial use.
+     Please contact Xceed Sales mailto:sales@xceed.com to acquire a subscription at a very low cost.
+     A paid commercial license supports the development and continued increasing support of
+     Fluent Assertions users under both commercial and community licenses. Help us
+     keep Fluent Assertions at the forefront of unit testing.
+     For more information, visit https://xceed.com/products/unit-testing/fluent-assertions/
+[xUnit.net 00:00:00.73]       Expected result.IsSuccess to be True, but found False.
+[xUnit.net 00:00:00.73]       Stack Trace:
+[xUnit.net 00:00:00.73]            at FluentAssertions.Execution.LateBoundTestFramework.Throw(String message)
+[xUnit.net 00:00:00.73]            at FluentAssertions.Execution.DefaultAssertionStrategy.HandleFailure(String message)
+[xUnit.net 00:00:00.73]            at FluentAssertions.Execution.AssertionScope.AddPreFormattedFailure(String formattedFailureMessage)
+[xUnit.net 00:00:00.73]            at FluentAssertions.Execution.AssertionChain.FailWith(Func`1 getFailureReason)
+[xUnit.net 00:00:00.73]            at FluentAssertions.Execution.AssertionChain.FailWith(Func`1 getFailureReason)
+[xUnit.net 00:00:00.73]            at FluentAssertions.Execution.AssertionChain.FailWith(String message, Object[] args)
+[xUnit.net 00:00:00.73]            at FluentAssertions.Primitives.BooleanAssertions`1.BeTrue(String because, Object[] becauseArgs)
+[xUnit.net 00:00:00.73]         /Users/wikorn/Repos/Workspace/personal/Sam.FactoryERP/tests/Auth.Tests/LoginCommandHandlerTests.cs(222,0): at Auth.Tests.LoginCommandHandlerTests.Handle_ValidCredentials_ReturnsTokens_AndPersistsRefreshToken()
+[xUnit.net 00:00:00.73]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.74]   Finished:    Auth.Tests
+</StdOut>
+    </Output>
+    <RunInfos>
+      <RunInfo computerName="Wikorns-MacBook-Pro" outcome="Error" timestamp="2026-02-25T17:08:20.3280320+07:00">
+        <Text>[xUnit.net 00:00:00.72]     Auth.Tests.LoginCommandHandlerTests.Handle_ValidCredentials_ReturnsTokens_AndPersistsRefreshToken [FAIL]</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+</TestRun>

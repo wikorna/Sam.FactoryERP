@@ -1,0 +1,81 @@
+<Solution>
+  <Folder Name="/src/" />
+  <Folder Name="/src/BuildingBlocks/">
+    <Project Path="src/BuildingBlocks/FactoryERP.Abstractions/FactoryERP.Abstractions.csproj" />
+    <Project Path="src/BuildingBlocks/FactoryERP.Contracts/FactoryERP.Contracts.csproj" />
+    <Project Path="src/BuildingBlocks/FactoryERP.Infrastructure/FactoryERP.Infrastructure.csproj" />
+    <Project Path="src/BuildingBlocks/FactoryERP.ReadModel/FactoryERP.ReadModel.csproj" />
+    <Project Path="src/BuildingBlocks/FactoryERP.SharedKernel/FactoryERP.SharedKernel.csproj" />
+  </Folder>
+  <Folder Name="/src/Host/">
+    <Project Path="src/Host/FactoryERP.ApiHost/FactoryERP.ApiHost.csproj" />
+    <Project Path="src/Host/FactoryERP.WorkerHost/FactoryERP.WorkerHost.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/" />
+  <Folder Name="/src/Modules/Admin/">
+    <Project Path="src/Modules/Admin/Admin.Api/Admin.Api.csproj" />
+    <Project Path="src/Modules/Admin/Admin.Application/Admin.Application.csproj" />
+    <Project Path="src/Modules/Admin/Admin.Domain/Admin.Domain.csproj" />
+    <Project Path="src/Modules/Admin/Admin.Infrastructure/Admin.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/Costing/">
+    <Project Path="src/Modules/Costing/Costing.Api/Costing.Api.csproj" />
+    <Project Path="src/Modules/Costing/Costing.Application/Costing.Application.csproj" />
+    <Project Path="src/Modules/Costing/Costing.Domain/Costing.Domain.csproj" />
+    <Project Path="src/Modules/Costing/Costing.Infrastructure/Costing.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/EDI/">
+    <Project Path="src/Modules/EDI/EDI.Api/EDI.Api.csproj" />
+    <Project Path="src/Modules/EDI/EDI.Application/EDI.Application.csproj" />
+    <Project Path="src/Modules/EDI/EDI.Domain/EDI.Domain.csproj" />
+    <Project Path="src/Modules/EDI/EDI.Infrastructure/EDI.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/Inventory/">
+    <Project Path="src/Modules/Inventory/Inventory.Api/Inventory.Api.csproj" />
+    <Project Path="src/Modules/Inventory/Inventory.Application/Inventory.Application.csproj" />
+    <Project Path="src/Modules/Inventory/Inventory.Domain/Inventory.Domain.csproj" />
+    <Project Path="src/Modules/Inventory/Inventory.Infrastructure/Inventory.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/Labeling/">
+    <Project Path="src/Modules/Labeling/Labeling.Api/Labeling.Api.csproj" />
+    <Project Path="src/Modules/Labeling/Labeling.Application/Labeling.Application.csproj" />
+    <Project Path="src/Modules/Labeling/Labeling.Domain/Labeling.Domain.csproj" />
+    <Project Path="src/Modules/Labeling/Labeling.Infrastructure/Labeling.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/Production/">
+    <Project Path="src/Modules/Production/Production.Api/Production.Api.csproj" />
+    <Project Path="src/Modules/Production/Production.Application/Production.Application.csproj" />
+    <Project Path="src/Modules/Production/Production.Domain/Production.Domain.csproj" />
+    <Project Path="src/Modules/Production/Production.Infrastructure/Production.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/Purchasing/">
+    <Project Path="src/Modules/Purchasing/Purchasing.Api/Purchasing.Api.csproj" />
+    <Project Path="src/Modules/Purchasing/Purchasing.Application/Purchasing.Application.csproj" />
+    <Project Path="src/Modules/Purchasing/Purchasing.Domain/Purchasing.Domain.csproj" />
+    <Project Path="src/Modules/Purchasing/Purchasing.Infrastructure/Purchasing.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/Quality/">
+    <Project Path="src/Modules/Quality/Quality.Api/Quality.Api.csproj" />
+    <Project Path="src/Modules/Quality/Quality.Application/Quality.Application.csproj" />
+    <Project Path="src/Modules/Quality/Quality.Domain/Quality.Domain.csproj" />
+    <Project Path="src/Modules/Quality/Quality.Infrastructure/Quality.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/Sales/">
+    <Project Path="src/Modules/Sales/Sales.Api/Sales.Api.csproj" />
+    <Project Path="src/Modules/Sales/Sales.Application/Sales.Application.csproj" />
+    <Project Path="src/Modules/Sales/Sales.Domain/Sales.Domain.csproj" />
+    <Project Path="src/Modules/Sales/Sales.Infrastructure/Sales.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/Auth/">
+    <Project Path="src/Modules/Auth/Auth.Api/Auth.Api.csproj" />
+    <Project Path="src/Modules/Auth/Auth.Application/Auth.Application.csproj" />
+    <Project Path="src/Modules/Auth/Auth.Domain/Auth.Domain.csproj" />
+    <Project Path="src/Modules/Auth/Auth.Infrastructure/Auth.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/EDI.Tests/EDI.Tests.csproj" />
+    <Project Path="tests/FactoryERP.ArchTests/FactoryERP.ArchTests.csproj" />
+    <Project Path="tests/Auth.Tests/Auth.Tests.csproj" />
+    <Project Path="tests/Labeling.Tests/Labeling.Tests.csproj" />
+  </Folder>
+</Solution>

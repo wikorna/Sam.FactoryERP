@@ -1,0 +1,6 @@
+@FactoryERP.ApiHost_HostAddress = http://localhost:5219
+
+GET {{FactoryERP.ApiHost_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
