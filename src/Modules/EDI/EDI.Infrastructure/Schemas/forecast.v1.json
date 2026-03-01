@@ -1,0 +1,37 @@
+{
+  "schemaKey": "Forecast",
+  "schemaVersion": "v1",
+  "fileType": "Forecast",
+  "filenamePrefixPattern": "^[Ff]",
+  "delimiter": ",",
+  "hasHeaderRow": true,
+  "skipLines": 0,
+  "requiredHeaders": [
+    "Document No_",
+    "Item No_",
+    "Description",
+    "Quantity",
+    "Unit of Measure Code",
+    "Due Date"
+  ],
+  "optionalHeaders": [
+    "Variant Code",
+    "Location Code",
+    "Customer No_",
+    "Customer Name"
+  ],
+  "headerAliases": {
+    "DocumentNo": "Document No_",
+    "Document No": "Document No_",
+    "ItemNo": "Item No_",
+    "Item No": "Item No_",
+    "Qty": "Quantity",
+    "UoM": "Unit of Measure Code",
+    "UOM": "Unit of Measure Code",
+    "DueDate": "Due Date"
+  },
+  "extractRules": {
+    "documentNo": { "source": "filename", "stripExtension": true }
+  }
+}
+

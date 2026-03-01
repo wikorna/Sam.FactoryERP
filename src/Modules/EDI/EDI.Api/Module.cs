@@ -30,6 +30,7 @@ public static class EdiModule
 
         g.MapGet("/ping", () => Results.Ok("edi-ok"));
 
+
         // ── Legacy endpoints ──
 
         g.MapPost("/receive", async (ReceiveEdiFileRequest req, IMediator mediator) =>

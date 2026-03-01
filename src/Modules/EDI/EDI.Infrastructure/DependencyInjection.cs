@@ -1,4 +1,5 @@
 using EDI.Application.Abstractions;
+using EDI.Infrastructure.Detection;
 using EDI.Infrastructure.FileStores;
 using EDI.Infrastructure.Outbox;
 using EDI.Infrastructure.Parsers;
@@ -36,6 +37,15 @@ public static class DependencyInjection
         // Config-driven parsing
         services.AddScoped<ConfigDrivenCsvParser>();
         services.AddScoped<IFileTypeDetector, FileTypeDetector>();
+
+        // Schema-driven file detection (IEdiFileDetector / IEdiSchemaProvider)
+        services.AddSingleton<IEdiSchemaProvider>(sp =>
+        {
+            var logger = sp.GetRequiredService<Microsoft.Extensions.Logging.ILogger<JsonEdiSchemaProvider>>();
+            var schemaDir = Path.Combine(AppContext.BaseDirectory, "Schemas");
+            return new JsonEdiSchemaProvider(logger, schemaDir);
+        });
+        services.AddScoped<IEdiFileDetector, CsvEdiFileDetector>();
 
         // Staging and Outbox
         services.AddScoped<IStagingRepository, SqlStagingRepository>();

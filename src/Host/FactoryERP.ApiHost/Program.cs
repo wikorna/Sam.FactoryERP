@@ -81,7 +81,17 @@ builder.Services.AddHostedService(sp => sp.GetRequiredService<SigningKeyCacheSer
 
 // Module registrations (Sales, Production, Purchasing, Inventory, etc.)
 builder.Services.AddModules(builder.Configuration);
-builder.Services.AddControllers();
+builder.Services
+    .AddControllers()
+    // Discover [ApiController] classes from module assemblies that are not auto-loaded
+    // by the host because they are separate class-library projects (not .Web SDK).
+    .AddApplicationPart(typeof(EDI.Api.Controllers.EdiFilesController).Assembly);
+
+// Raise multipart body limit to 10 MB (same as the controller's file-size guard)
+builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(opt =>
+{
+    opt.MultipartBodyLengthLimit = 10 * 1024 * 1024; // 10 MB
+});
 builder.Services.AddEndpointsApiExplorer();
 
 // ── Swagger / OpenAPI (Swashbuckle) ──────────────────────────────────────────
@@ -216,11 +226,11 @@ builder.Services.Configure<ForwardedHeadersOptions>(opt =>
 builder.Services.AddFactoryErpMessaging<LabelingDbContext>(builder.Configuration);
 
 // CORS — must be registered before Build()
-var allowedOrigins = new[]
-{
-    "http://localhost:4200",
-    "https://localhost:4200",
-};
+// Origins are read from config so appsettings.Development.json controls them without recompile.
+var allowedOrigins = builder.Configuration
+    .GetSection("AllowedOrigins")
+    .Get<string[]>()
+    ?? ["http://localhost:4200", "https://localhost:4200"];
 
 builder.Services.AddCors(options =>
 {

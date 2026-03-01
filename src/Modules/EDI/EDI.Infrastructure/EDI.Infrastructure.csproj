@@ -25,6 +25,14 @@
     <Compile Remove="Parsers\PurchaseOrder\PurchaseOrderParser.cs" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- Copy JSON schemas to output directory so JsonEdiSchemaProvider can read them at runtime -->
+    <Content Include="Schemas\*.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>Schemas\%(Filename)%(Extension)</TargetPath>
+    </Content>
+  </ItemGroup>
+
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
