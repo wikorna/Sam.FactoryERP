@@ -16,6 +16,8 @@ public class EdiDbContext : DbContext
     public DbSet<PurchaseOrderStagingHeader> PurchaseOrderStagingHeaders => Set<PurchaseOrderStagingHeader>();
     public DbSet<PurchaseOrderStagingDetail> PurchaseOrderStagingDetails => Set<PurchaseOrderStagingDetail>();
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
+    public DbSet<EdiStagingFile> EdiStagingFiles => Set<EdiStagingFile>();
+    public DbSet<EdiStagingFileError> EdiStagingFileErrors => Set<EdiStagingFileError>();
 
     // Config-driven EDI
     public DbSet<EdiFileTypeConfig> EdiFileTypeConfigs => Set<EdiFileTypeConfig>();

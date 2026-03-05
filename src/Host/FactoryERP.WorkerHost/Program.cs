@@ -5,6 +5,9 @@ using FactoryERP.Infrastructure.Messaging;
 using Labeling.Infrastructure;
 using Labeling.Infrastructure.Consumers;
 using Labeling.Infrastructure.Persistence;
+using EDI.Infrastructure;
+using EDI.Infrastructure.Worker;
+using EDI.Application;
 using Serilog;
 using Serilog.Events;
 using DbFingerprint = FactoryERP.WorkerHost.DbFingerprint;
@@ -34,6 +37,8 @@ builder.Services.AddSerilog((services, cfg) =>
        .Enrich.FromLogContext());
 
 builder.Services.AddLabelingInfrastructure(builder.Configuration);
+builder.Services.AddEdiApplication();
+builder.Services.AddEdiInfrastructure(builder.Configuration);
 // Caching (HybridCache L1 + Redis L2)
 builder.Services.AddFactoryErpCaching(builder.Configuration);
 builder.Services.AddEmailInfrastructure(builder.Configuration);
@@ -46,6 +51,7 @@ builder.Services.AddFactoryErpMessaging<LabelingDbContext>(
         cfg.AddConsumer<PrintZplCommandConsumer>();
     });
 
+builder.Services.AddHostedService<EdiOutboxProcessorBackgroundService>();
 
 var app = builder.Build();
 

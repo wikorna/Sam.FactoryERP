@@ -1,0 +1,46 @@
+{
+  "schemaKey": "PurchaseOrder",
+  "schemaVersion": "v1",
+  "fileType": "PurchaseOrder",
+  "filenamePrefixPattern": "^[Pp]",
+  "delimiter": ",",
+  "hasHeaderRow": true,
+  "skipLines": 0,
+  "requiredHeaders": [
+    "Document No_",
+    "Line No_",
+    "Item No_",
+    "Description",
+    "Quantity",
+    "Unit of Measure Code",
+    "Due Date",
+    "Unit Cost"
+  ],
+  "optionalHeaders": [
+    "Vendor No_",
+    "Vendor Name",
+    "Location Code",
+    "Currency Code",
+    "Buy-from Vendor No_",
+    "Outstanding Quantity",
+    "Amount"
+  ],
+  "headerAliases": {
+    "DocumentNo": "Document No_",
+    "Document No": "Document No_",
+    "LineNo": "Line No_",
+    "Line No": "Line No_",
+    "ItemNo": "Item No_",
+    "Item No": "Item No_",
+    "Qty": "Quantity",
+    "UoM": "Unit of Measure Code",
+    "UOM": "Unit of Measure Code",
+    "DueDate": "Due Date",
+    "UnitCost": "Unit Cost",
+    "Unit Cost (LCY)": "Unit Cost"
+  },
+  "extractRules": {
+    "documentNo": { "source": "filename", "stripExtension": true }
+  }
+}
+

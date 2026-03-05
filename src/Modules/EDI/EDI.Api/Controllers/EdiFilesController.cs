@@ -1,4 +1,8 @@
 using EDI.Application.Features.DetectEdiFile;
+using EDI.Application.Features.Files.GetEdiFilePreview;
+using EDI.Application.Features.Files.GetEdiFileStatus;
+using EDI.Application.Features.Files.ImportEdiFile;
+using EDI.Application.Features.Files.StageEdiFile;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -21,6 +25,15 @@ public sealed class DetectEdiFileRequest
     /// Optional caller identifier — forwarded into the MediatR command for tracing/audit.
     /// Accepts any non-empty string (UUID, username, system name, etc.).
     /// </summary>
+    public string? ClientId { get; init; }
+}
+
+/// <summary>
+/// Multipart/form-data request for EDI file staging.
+/// </summary>
+public sealed class StageEdiFileRequest
+{
+    public IFormFile? File { get; init; }
     public string? ClientId { get; init; }
 }
 
@@ -131,6 +144,89 @@ public sealed class EdiFilesController(IMediator mediator) : ControllerBase
             Errors:   result.Errors
                 .Select(e => new EdiErrorDto(e.Code, e.Message))
                 .ToList()));
+    }
+
+    /// <summary>
+    /// Stage an EDI file for asynchronous processing.
+    /// </summary>
+    [HttpPost("stage")]
+    [Consumes("multipart/form-data")]
+    [ProducesResponseType(typeof(StageEdiFileResult), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status413RequestEntityTooLarge)]
+    public async Task<IActionResult> StageAsync([FromForm] StageEdiFileRequest request, CancellationToken ct)
+    {
+        var file = request.File;
+        if (file is null || file.Length == 0)
+        {
+            return Problem(detail: "File is missing.", statusCode: StatusCodes.Status400BadRequest);
+        }
+        if (file.Length > MaxFileSizeBytes)
+        {
+            return Problem(detail: "File too large.", statusCode: StatusCodes.Status413RequestEntityTooLarge);
+        }
+
+        var safeFileName = Path.GetFileName(file.FileName);
+        await using var stream = file.OpenReadStream();
+
+        var command = new StageEdiFileCommand(
+            Content: stream,
+            FileName: safeFileName,
+            SizeBytes: file.Length,
+            ContentType: file.ContentType,
+            ClientId: request.ClientId?.Trim());
+
+        var result = await mediator.Send(command, ct);
+
+        return CreatedAtAction(nameof(GetStatusAsync), new { stagingId = result.StagingId }, result);
+    }
+
+    /// <summary>
+    /// Gets the processing status of a staged EDI file.
+    /// </summary>
+    [HttpGet("{stagingId}")]
+    [ProducesResponseType(typeof(GetEdiFileStatusResult), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetStatusAsync(Guid stagingId, CancellationToken ct)
+    {
+        var result = await mediator.Send(new GetEdiFileStatusQuery(stagingId), ct);
+        if (result is null) return NotFound();
+        return Ok(result);
+    }
+
+    /// <summary>
+    /// Queues the staged EDI file for import processing.
+    /// </summary>
+    [HttpPost("{stagingId}/import")]
+    [ProducesResponseType(StatusCodes.Status202Accepted)]
+    public async Task<IActionResult> ImportAsync(Guid stagingId, [FromQuery] string? clientId = null, CancellationToken ct = default)
+    {
+        var result = await mediator.Send(new ImportEdiFileCommand(stagingId, clientId), ct);
+        if (!result.Success)
+        {
+            // If the message indicates not found, we could return 404, but to keep it simple we return 400 with the message.
+            if (result.Message.Contains("not found")) return NotFound(new { message = result.Message });
+            return BadRequest(new { message = result.Message });
+        }
+
+        return Accepted($"/api/edi/files/{stagingId}");
+    }
+
+    /// <summary>
+    /// Gets a paginated preview of parsed EDI rows.
+    /// </summary>
+    [HttpGet("{stagingId}/preview")]
+    [ProducesResponseType(typeof(GetEdiFilePreviewResult), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetPreviewAsync(
+        Guid stagingId,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 50,
+        CancellationToken ct = default)
+    {
+        var result = await mediator.Send(new GetEdiFilePreviewQuery(stagingId, page, pageSize), ct);
+        if (result is null) return NotFound();
+        return Ok(result);
     }
 }
 

@@ -25,6 +25,8 @@
   <ItemGroup>
     <ProjectReference Include="..\..\BuildingBlocks\FactoryERP.Infrastructure\FactoryERP.Infrastructure.csproj" />
     <ProjectReference Include="..\..\Modules\Labeling\Labeling.Infrastructure\Labeling.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Modules\EDI\EDI.Infrastructure\EDI.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Modules\EDI\EDI.Application\EDI.Application.csproj" />
   </ItemGroup>
 
   <ItemGroup>

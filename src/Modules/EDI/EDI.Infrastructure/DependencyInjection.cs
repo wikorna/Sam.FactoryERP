@@ -26,9 +26,11 @@ public static class DependencyInjection
         // Repositories
         services.AddScoped<IEdiFileJobRepository, EdiFileJobRepository>();
         services.AddScoped<IEdiFileTypeConfigRepository, EdiFileTypeConfigRepository>();
+        services.AddScoped<IEdiStagingFileRepository, EdiStagingFileRepository>();
 
         // File handling
         services.AddScoped<IEdiFileStore, FileSystemEdiFileStore>();
+        services.AddScoped<IEdiStorageService, DiskEdiStorageService>();
 
         // Parsing (legacy typed parsers)
         services.AddScoped<IEdiParser, CsvItemMasterParser>();
@@ -38,12 +40,19 @@ public static class DependencyInjection
         services.AddScoped<ConfigDrivenCsvParser>();
         services.AddScoped<IFileTypeDetector, FileTypeDetector>();
 
-        // Schema-driven file detection (IEdiFileDetector / IEdiSchemaProvider)
+        // Schema-driven file detection — IEdiSchemaProvider (per file type) and
+        // IEdiSchemaRegistry (case-insensitive key registry, startup-validated)
         services.AddSingleton<IEdiSchemaProvider>(sp =>
         {
             var logger = sp.GetRequiredService<Microsoft.Extensions.Logging.ILogger<JsonEdiSchemaProvider>>();
             var schemaDir = Path.Combine(AppContext.BaseDirectory, "Schemas");
             return new JsonEdiSchemaProvider(logger, schemaDir);
+        });
+        services.AddSingleton<IEdiSchemaRegistry>(sp =>
+        {
+            var logger = sp.GetRequiredService<Microsoft.Extensions.Logging.ILogger<EdiSchemaRegistry>>();
+            var schemaDir = Path.Combine(AppContext.BaseDirectory, "Schemas");
+            return new EdiSchemaRegistry(logger, schemaDir);
         });
         services.AddScoped<IEdiFileDetector, CsvEdiFileDetector>();
 
