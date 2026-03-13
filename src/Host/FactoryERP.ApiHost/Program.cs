@@ -291,6 +291,10 @@ builder.Services.AddSignalR(options =>
     options.EnableDetailedErrors = builder.Environment.IsDevelopment();
     // Keep-alive interval (server → client ping).
     options.KeepAliveInterval = TimeSpan.FromSeconds(15);
+
+    options.ClientTimeoutInterval = TimeSpan.FromSeconds(60);
+    options.HandshakeTimeout = TimeSpan.FromSeconds(15);
+    options.MaximumReceiveMessageSize = 64 * 1024;
 });
 
 // Map JWT sub/nameidentifier to SignalR user ID (used by Clients.User()).
@@ -298,6 +302,12 @@ builder.Services.AddSingleton<IUserIdProvider, NotificationUserIdProvider>();
 
 // INotificationDispatcher — pushes realtime messages via IHubContext<NotificationHub>.
 builder.Services.AddScoped<INotificationDispatcher, NotificationDispatcher>();
+
+// IPushProgressService — pushes job progress via IHubContext<ProgressHub>.
+builder.Services.AddScoped<IPushProgressService, SignalRPushProgressService>();
+
+// IJobAccessService — authorizes hub group joins (ProgressHub.JoinGroup).
+builder.Services.AddScoped<IJobAccessService, DefaultJobAccessService>();
 
 // ──────────────────────────────────────────────────────────────────────────────
 // 3. Build & configure the middleware pipeline
@@ -368,6 +378,8 @@ app.MapControllers();
 app.MapModules();
 // SignalR hub — Angular connects to wss://host/hubs/notifications?access_token=<jwt>
 app.MapHub<NotificationHub>("/hubs/notifications");
+// SignalR hub — Angular connects to wss://host/hubs/progress?access_token=<jwt>
+app.MapHub<ProgressHub>("/hubs/progress");
 // ──────────────────────────────────────────────────────────────────────────────
 // 4. Startup diagnostics & run
 // ──────────────────────────────────────────────────────────────────────────────

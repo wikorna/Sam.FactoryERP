@@ -48,6 +48,73 @@ namespace Labeling.Infrastructure.Migrations
                     b.ToTable("DepartmentPrinters", "labeling");
                 });
 
+            modelBuilder.Entity("Labeling.Domain.Entities.LabelTemplate", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<int>("DesignDpi")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(300);
+
+                    b.Property<string>("DisplayName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
+
+                    b.Property<int>("LabelHeightMm")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("LabelWidthMm")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ModifiedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("TemplateKey")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Version")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("ZplBody")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TemplateKey", "IsActive")
+                        .HasDatabaseName("IX_LabelTemplates_Key_Active");
+
+                    b.HasIndex("TemplateKey", "Version")
+                        .IsUnique()
+                        .HasDatabaseName("IX_LabelTemplates_Key_Version");
+
+                    b.ToTable("LabelTemplates", "labeling");
+                });
+
             modelBuilder.Entity("Labeling.Domain.Entities.PrintJob", b =>
                 {
                     b.Property<Guid>("Id")

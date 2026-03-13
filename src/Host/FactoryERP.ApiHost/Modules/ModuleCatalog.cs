@@ -18,6 +18,7 @@ using Production.Api;
 using Purchasing.Api;
 using Quality.Api;
 using Sales.Api;
+using Shipping.Api;
 
 namespace FactoryERP.ApiHost.Modules;
 
@@ -36,6 +37,7 @@ public static class ModuleCatalog
         services.AddLabelingModule(config);
         services.AddAuthModule(config);
         services.AddNotificationModule(config);
+        services.AddShippingModule(config);
         return services;
     }
 
@@ -52,6 +54,7 @@ public static class ModuleCatalog
         app.MapLabelingEndpoints();
         app.MapAuthEndpoints();
         app.MapNotificationEndpoints();
+        app.MapShippingEndpoints();
         return app;
     }
 }

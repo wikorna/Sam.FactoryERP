@@ -72,6 +72,12 @@
     <Project Path="src/Modules/Sales/Sales.Domain/Sales.Domain.csproj" />
     <Project Path="src/Modules/Sales/Sales.Infrastructure/Sales.Infrastructure.csproj" />
   </Folder>
+  <Folder Name="/src/Modules/Shipping/">
+    <Project Path="src/Modules/Shipping/Shipping.Api/Shipping.Api.csproj" />
+    <Project Path="src/Modules/Shipping/Shipping.Application/Shipping.Application.csproj" />
+    <Project Path="src/Modules/Shipping/Shipping.Domain/Shipping.Domain.csproj" />
+    <Project Path="src/Modules/Shipping/Shipping.Infrastructure/Shipping.Infrastructure.csproj" />
+  </Folder>
   <Folder Name="/src/Modules/Auth/">
     <Project Path="src/Modules/Auth/Auth.Api/Auth.Api.csproj" />
     <Project Path="src/Modules/Auth/Auth.Application/Auth.Application.csproj" />

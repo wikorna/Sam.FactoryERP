@@ -17,6 +17,7 @@ public class LabelingDbContext : DbContext, ILabelingDbContext
     public DbSet<DepartmentPrinter> DepartmentPrinters => Set<DepartmentPrinter>();
     public DbSet<StorePrinter> StorePrinters => Set<StorePrinter>();
     public DbSet<UserPrinterOverride> UserPrinterOverrides => Set<UserPrinterOverride>();
+    public DbSet<LabelTemplate> LabelTemplates => Set<LabelTemplate>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

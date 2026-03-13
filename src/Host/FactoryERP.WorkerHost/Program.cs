@@ -52,6 +52,10 @@ builder.Services.AddSingleton<ICurrentUserService, WorkerCurrentUserService>();
 // inject INotificationDispatcher still work without any runtime failure.
 builder.Services.AddSingleton<INotificationDispatcher, NullNotificationDispatcher>();
 
+// WorkerHost has no ProgressHub — use a no-op service so consumers that
+// inject IPushProgressService still work without any runtime failure.
+builder.Services.AddSingleton<IPushProgressService, NullPushProgressService>();
+
 builder.Services.AddLabelingInfrastructure(builder.Configuration);
 builder.Services.AddEdiApplication();
 builder.Services.AddEdiInfrastructure(builder.Configuration);
