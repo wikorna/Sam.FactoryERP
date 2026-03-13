@@ -13,6 +13,7 @@ using FactoryERP.ApiHost.Infrastructure.Realtime;
 using Hangfire;
 using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.SignalR;
+using Notification.Infrastructure;
 using Auth.Infrastructure;
 using Auth.Infrastructure.Options;
 using Auth.Infrastructure.Seeding;
@@ -92,7 +93,8 @@ builder.Services
     .AddControllers()
     // Discover [ApiController] classes from module assemblies that are not auto-loaded
     // by the host because they are separate class-library projects (not .Web SDK).
-    .AddApplicationPart(typeof(EDI.Api.Controllers.EdiFilesController).Assembly);
+    .AddApplicationPart(typeof(EDI.Api.Controllers.EdiFilesController).Assembly)
+    .AddApplicationPart(typeof(Notification.Api.Controllers.NotificationsController).Assembly);
 
 // Raise multipart body limit to 10 MB (same as the controller's file-size guard)
 builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(opt =>
@@ -254,8 +256,12 @@ builder.Services.AddHangfireServer(options =>
     options.Queues = ["default", "edi", "printing"];
 });
 
-// MassTransit + RabbitMQ + EF Core Outbox + IEventBus (publish-only, no consumers)
-builder.Services.AddFactoryErpMessaging<LabelingDbContext>(builder.Configuration);
+// MassTransit + RabbitMQ + EF Core Outbox + IEventBus
+// ApiHost registers one consumer: NotificationSignalRPushConsumer, which receives the
+// NotificationCreatedIntegrationEvent published by WorkerHost and pushes via SignalR.
+builder.Services.AddFactoryErpMessaging<LabelingDbContext>(
+    builder.Configuration,
+    cfg => cfg.AddNotificationApiHostConsumers());
 
 // CORS — must be registered before Build()
 // Origins are read from config so appsettings.Development.json controls them without recompile.

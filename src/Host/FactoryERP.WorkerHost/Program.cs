@@ -14,6 +14,8 @@ using Labeling.Application.Interfaces;
 using Labeling.Infrastructure;
 using Labeling.Infrastructure.Consumers;
 using Labeling.Infrastructure.Persistence;
+using Notification.Application;
+using Notification.Infrastructure;
 using Serilog;
 using Serilog.Events;
 using FactoryERP.WorkerHost.Auth;
@@ -53,6 +55,11 @@ builder.Services.AddSingleton<INotificationDispatcher, NullNotificationDispatche
 builder.Services.AddLabelingInfrastructure(builder.Configuration);
 builder.Services.AddEdiApplication();
 builder.Services.AddEdiInfrastructure(builder.Configuration);
+
+// Notification module (application handlers + infrastructure services)
+builder.Services.AddNotificationApplication();
+builder.Services.AddNotificationInfrastructure(builder.Configuration);
+
 // Caching (HybridCache L1 + Redis L2)
 builder.Services.AddFactoryErpCaching(builder.Configuration);
 
@@ -75,6 +82,8 @@ builder.Services.AddFactoryErpMessaging<LabelingDbContext>(
     {
         cfg.AddConsumer<QrPrintRequestedConsumer>();
         cfg.AddConsumer<PrintZplCommandConsumer>();
+        // Notification consumers — create persistent notifications from domain events
+        cfg.AddNotificationWorkerConsumers();
     });
 
 builder.Services.AddHostedService<EdiOutboxProcessorBackgroundService>();

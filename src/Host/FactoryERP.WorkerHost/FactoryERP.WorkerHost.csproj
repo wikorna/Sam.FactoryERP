@@ -29,6 +29,7 @@
     <ProjectReference Include="..\..\Modules\Labeling\Labeling.Infrastructure\Labeling.Infrastructure.csproj" />
     <ProjectReference Include="..\..\Modules\EDI\EDI.Infrastructure\EDI.Infrastructure.csproj" />
     <ProjectReference Include="..\..\Modules\EDI\EDI.Application\EDI.Application.csproj" />
+    <ProjectReference Include="..\..\Modules\Notification\Notification.Infrastructure\Notification.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>

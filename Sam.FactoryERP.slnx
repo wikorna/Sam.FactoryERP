@@ -42,6 +42,12 @@
     <Project Path="src/Modules/Labeling/Labeling.Domain/Labeling.Domain.csproj" />
     <Project Path="src/Modules/Labeling/Labeling.Infrastructure/Labeling.Infrastructure.csproj" />
   </Folder>
+  <Folder Name="/src/Modules/Notification/">
+    <Project Path="src/Modules/Notification/Notification.Api/Notification.Api.csproj" />
+    <Project Path="src/Modules/Notification/Notification.Application/Notification.Application.csproj" />
+    <Project Path="src/Modules/Notification/Notification.Domain/Notification.Domain.csproj" />
+    <Project Path="src/Modules/Notification/Notification.Infrastructure/Notification.Infrastructure.csproj" />
+  </Folder>
   <Folder Name="/src/Modules/Production/">
     <Project Path="src/Modules/Production/Production.Api/Production.Api.csproj" />
     <Project Path="src/Modules/Production/Production.Application/Production.Application.csproj" />

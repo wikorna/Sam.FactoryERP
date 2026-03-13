@@ -52,6 +52,7 @@
     <ProjectReference Include="..\..\Modules\EDI\EDI.Api\EDI.Api.csproj" />
     <ProjectReference Include="..\..\Modules\Labeling\Labeling.Api\Labeling.Api.csproj" />
     <ProjectReference Include="..\..\Modules\Auth\Auth.Api\Auth.Api.csproj" />
+    <ProjectReference Include="..\..\Modules\Notification\Notification.Api\Notification.Api.csproj" />
     <ProjectReference Include="..\..\Modules\Auth\Auth.Infrastructure\Auth.Infrastructure.csproj" />
     <ProjectReference Include="..\..\Modules\Sales\Sales.Infrastructure\Sales.Infrastructure.csproj" />
   </ItemGroup>

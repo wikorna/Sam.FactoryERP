@@ -13,6 +13,7 @@ using FactoryERP.Modules.EDI.Api;
 using FactoryERP.Modules.Labeling.Api;
 using Inventory.Api;
 using Labeling.Api;
+using Notification.Api;
 using Production.Api;
 using Purchasing.Api;
 using Quality.Api;
@@ -34,6 +35,7 @@ public static class ModuleCatalog
         services.AddEdiModule(config);
         services.AddLabelingModule(config);
         services.AddAuthModule(config);
+        services.AddNotificationModule(config);
         return services;
     }
 
@@ -49,6 +51,7 @@ public static class ModuleCatalog
         app.MapEdiEndpoints();
         app.MapLabelingEndpoints();
         app.MapAuthEndpoints();
+        app.MapNotificationEndpoints();
         return app;
     }
 }
