@@ -6,6 +6,13 @@
 using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using Auth.Application.Interfaces;
+using FactoryERP.Abstractions.Realtime;
+using FactoryERP.ApiHost.Hubs;
+using FactoryERP.ApiHost.Infrastructure.Hangfire;
+using FactoryERP.ApiHost.Infrastructure.Realtime;
+using Hangfire;
+using Hangfire.PostgreSql;
+using Microsoft.AspNetCore.SignalR;
 using Auth.Infrastructure;
 using Auth.Infrastructure.Options;
 using Auth.Infrastructure.Seeding;
@@ -177,11 +184,25 @@ builder.Services
 
         options.Events = new JwtBearerEvents
         {
-            // Reject tokens sent via query string (prevent URL logging/leaking).
+            // Token extraction:
+            // - Standard HTTP endpoints: tokens must arrive in the Authorization header.
+            // - SignalR WebSocket endpoints: the browser WS API cannot set custom headers,
+            //   so SignalR passes the JWT as ?access_token=… on hub paths only.
+            //   We read it here and reject it on any other path.
             OnMessageReceived = ctx =>
             {
-                if (ctx.Request.Query.ContainsKey("access_token"))
-                    ctx.Fail("Tokens must not be sent via query string.");
+                var path = ctx.HttpContext.Request.Path;
+                var isHubPath = path.StartsWithSegments("/hubs", StringComparison.OrdinalIgnoreCase);
+
+                if (ctx.Request.Query.TryGetValue("access_token", out var token))
+                {
+                    if (isHubPath)
+                        // Inject into the context so JwtBearer validates it normally.
+                        ctx.Token = token;
+                    else
+                        ctx.Fail("Tokens must not be sent via query string on non-hub endpoints.");
+                }
+
                 return Task.CompletedTask;
             },
 
@@ -222,6 +243,17 @@ builder.Services.Configure<ForwardedHeadersOptions>(opt =>
     // Production: DO NOT clear; configure KnownProxies/KnownNetworks explicitly in config.
 });
 
+// Hangfire — job storage (PostgreSQL) + background server
+builder.Services.AddHangfire(config =>
+    config.UsePostgreSqlStorage(options =>
+        options.UseNpgsqlConnection(
+            builder.Configuration.GetConnectionString("DefaultConnection"))));
+
+builder.Services.AddHangfireServer(options =>
+{
+    options.Queues = ["default", "edi", "printing"];
+});
+
 // MassTransit + RabbitMQ + EF Core Outbox + IEventBus (publish-only, no consumers)
 builder.Services.AddFactoryErpMessaging<LabelingDbContext>(builder.Configuration);
 
@@ -244,6 +276,22 @@ builder.Services.AddCors(options =>
         // .AllowCredentials();
     });
 });
+
+// ── SignalR — real-time notification hub ──────────────────────────────────────
+// No NuGet package required: SignalR ships in the ASP.NET Core shared framework.
+builder.Services.AddSignalR(options =>
+{
+    // Surface hub-level exceptions to the Angular client in Development.
+    options.EnableDetailedErrors = builder.Environment.IsDevelopment();
+    // Keep-alive interval (server → client ping).
+    options.KeepAliveInterval = TimeSpan.FromSeconds(15);
+});
+
+// Map JWT sub/nameidentifier to SignalR user ID (used by Clients.User()).
+builder.Services.AddSingleton<IUserIdProvider, NotificationUserIdProvider>();
+
+// INotificationDispatcher — pushes realtime messages via IHubContext<NotificationHub>.
+builder.Services.AddScoped<INotificationDispatcher, NotificationDispatcher>();
 
 // ──────────────────────────────────────────────────────────────────────────────
 // 3. Build & configure the middleware pipeline
@@ -299,10 +347,21 @@ app.UseCors("SpaDevCors");
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseRateLimiter();
-// ⑦ Endpoints
+
+// ⑦ Hangfire Dashboard — Admin role required (IDashboardAuthorizationFilter enforces it)
+app.UseHangfireDashboard("/hangfire", new DashboardOptions
+{
+    Authorization = [new HangfireDashboardAuthorizationFilter()],
+    AppPath = "/swagger",     // "Back to site" link inside the dashboard
+    DashboardTitle = "Sam.FactoryERP — Job Dashboard",
+});
+
+// ⑧ Endpoints
 app.MapGet("/health", () => Results.Ok("OK"));
 app.MapControllers();
 app.MapModules();
+// SignalR hub — Angular connects to wss://host/hubs/notifications?access_token=<jwt>
+app.MapHub<NotificationHub>("/hubs/notifications");
 // ──────────────────────────────────────────────────────────────────────────────
 // 4. Startup diagnostics & run
 // ──────────────────────────────────────────────────────────────────────────────

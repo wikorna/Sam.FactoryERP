@@ -1,19 +1,23 @@
 using System.Globalization;
+using EDI.Application;
+using EDI.Infrastructure;
+using EDI.Infrastructure.Worker;
+using FactoryERP.Abstractions.Identity;
+using FactoryERP.Abstractions.Realtime;
 using FactoryERP.Infrastructure;
 using FactoryERP.Infrastructure.Email;
 using FactoryERP.Infrastructure.Messaging;
+using FactoryERP.Infrastructure.Realtime;
+using Hangfire;
+using Hangfire.PostgreSql;
+using Labeling.Application.Interfaces;
 using Labeling.Infrastructure;
 using Labeling.Infrastructure.Consumers;
 using Labeling.Infrastructure.Persistence;
-using EDI.Infrastructure;
-using EDI.Infrastructure.Worker;
-using EDI.Application;
-using Labeling.Application.Interfaces;
 using Serilog;
 using Serilog.Events;
-using DbFingerprint = FactoryERP.WorkerHost.DbFingerprint;
-using FactoryERP.Abstractions.Identity;
 using FactoryERP.WorkerHost.Auth;
+using DbFingerprint = FactoryERP.WorkerHost.DbFingerprint;
 
 
 var builder = Host.CreateApplicationBuilder(args);
@@ -42,11 +46,27 @@ builder.Services.AddSerilog((services, cfg) =>
 // Background worker has no request context; provide a system-level identity
 builder.Services.AddSingleton<ICurrentUserService, WorkerCurrentUserService>();
 
+// WorkerHost has no SignalR hub — use a no-op dispatcher so consumers that
+// inject INotificationDispatcher still work without any runtime failure.
+builder.Services.AddSingleton<INotificationDispatcher, NullNotificationDispatcher>();
+
 builder.Services.AddLabelingInfrastructure(builder.Configuration);
 builder.Services.AddEdiApplication();
 builder.Services.AddEdiInfrastructure(builder.Configuration);
 // Caching (HybridCache L1 + Redis L2)
 builder.Services.AddFactoryErpCaching(builder.Configuration);
+
+// Hangfire — job server only; dashboard is intentionally NOT registered here
+builder.Services.AddHangfire(config =>
+    config.UsePostgreSqlStorage(options =>
+        options.UseNpgsqlConnection(
+            builder.Configuration.GetConnectionString("DefaultConnection"))));
+
+builder.Services.AddHangfireServer(options =>
+{
+    options.Queues = ["default", "edi", "printing"];
+});
+
 builder.Services.AddEmailInfrastructure(builder.Configuration);
 // MassTransit + RabbitMQ + EF Core Outbox/Inbox + IEventBus (consumer side)
 builder.Services.AddFactoryErpMessaging<LabelingDbContext>(
