@@ -15,4 +15,9 @@ public interface IPrinterTransport
     /// Sends raw ZPL bytes to the specified host/port.
     /// </summary>
     Task SendAsync(string host, int port, string zplContent, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Sends raw binary data to the specified host/port.
+    /// </summary>
+    Task SendRawAsync(string host, int port, byte[] data, CancellationToken cancellationToken = default);
 }

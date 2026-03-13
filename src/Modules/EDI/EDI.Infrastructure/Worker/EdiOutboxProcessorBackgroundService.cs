@@ -43,20 +43,31 @@ public partial class EdiOutboxProcessorBackgroundService(
 
     private async Task ProcessOutboxMessagesAsync(CancellationToken stoppingToken)
     {
-        using var scope = serviceProvider.CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<EdiDbContext>();
-        var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
-
-        var messages = await dbContext.OutboxMessages
-            .Where(m => m.ProcessedOnUtc == null)
-            .OrderBy(m => m.OccurredOnUtc)
-            .Take(20)
-            .ToListAsync(stoppingToken);
-
-        if (messages.Count == 0) return;
-
-        foreach (var message in messages)
+        // 1. Fetch pending message IDs (fast, read-only)
+        List<Guid> messageIds;
+        using (var scope = serviceProvider.CreateScope())
         {
+            var dbContext = scope.ServiceProvider.GetRequiredService<EdiDbContext>();
+            messageIds = await dbContext.OutboxMessages
+                .Where(m => m.ProcessedOnUtc == null)
+                .OrderBy(m => m.OccurredOnUtc)
+                .Take(20)
+                .Select(m => m.Id)
+                .ToListAsync(stoppingToken);
+        }
+
+        if (messageIds.Count == 0) return;
+
+        // 2. Process each message in an ISOLATED transaction/scope
+        foreach (var id in messageIds)
+        {
+            using var scope = serviceProvider.CreateScope();
+            var dbContext = scope.ServiceProvider.GetRequiredService<EdiDbContext>();
+            var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+
+            var message = await dbContext.OutboxMessages.FindAsync([id], stoppingToken);
+            if (message == null || message.ProcessedOnUtc != null) continue;
+
             try
             {
                 if (message.Type == nameof(EdiImportRequestedEvent))
@@ -74,10 +85,12 @@ public partial class EdiOutboxProcessorBackgroundService(
             {
                 LogMessageProcessingError(logger, ex, message.Id);
                 message.Error = ex.Message;
-                message.ProcessedOnUtc = DateTime.UtcNow; // Mark processed even on error to avoid infinite loop
+                message.ProcessedOnUtc = DateTime.UtcNow; // Mark processed to avoid loop
             }
-        }
 
-        await dbContext.SaveChangesAsync(stoppingToken);
+            // Save ONLY this message's outcome (and whatever the handler did in this scope)
+            await dbContext.SaveChangesAsync(stoppingToken);
+        }
     }
 }
+

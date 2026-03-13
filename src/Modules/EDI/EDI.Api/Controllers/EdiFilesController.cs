@@ -178,13 +178,17 @@ public sealed class EdiFilesController(IMediator mediator) : ControllerBase
 
         var result = await mediator.Send(command, ct);
 
-        return CreatedAtAction(nameof(GetStatusAsync), new { stagingId = result.StagingId }, result);
+        //return CreatedAtAction(nameof(GetStatusAsync), new { stagingId = result.StagingId }, result);
+        return CreatedAtRoute(
+            "GetEdiFileStatus",
+            new { stagingId = result.StagingId },
+            result);
     }
 
     /// <summary>
     /// Gets the processing status of a staged EDI file.
     /// </summary>
-    [HttpGet("{stagingId}")]
+    [HttpGet("{stagingId}", Name = "GetEdiFileStatus")]
     [ProducesResponseType(typeof(GetEdiFileStatusResult), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetStatusAsync(Guid stagingId, CancellationToken ct)

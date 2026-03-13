@@ -1,6 +1,5 @@
 using System.Collections.Frozen;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using EDI.Application.Abstractions;
 using EDI.Domain.Enums;
 using EDI.Domain.Exceptions;
@@ -10,6 +9,7 @@ namespace EDI.Infrastructure.Detection;
 
 /// <summary>
 /// Loads and caches EDI schemas from JSON files at startup.
+/// Auto-discovers all <c>*.json</c> files in the schema directory.
 /// Registry uses <see cref="StringComparer.OrdinalIgnoreCase"/> for all lookups.
 /// Schemas are immutable after construction — zero allocation on hot path.
 /// </summary>
@@ -21,7 +21,6 @@ public sealed partial class EdiSchemaRegistry : IEdiSchemaRegistry
         ReadCommentHandling = JsonCommentHandling.Skip,
     };
 
-    // FrozenDictionary is immutable and faster for read-heavy workloads.
     private readonly FrozenDictionary<string, EdiSchema> _schemas;
 
     public IReadOnlyCollection<string> RegisteredKeys => _schemas.Keys;
@@ -33,15 +32,15 @@ public sealed partial class EdiSchemaRegistry : IEdiSchemaRegistry
 
         var schemas = new Dictionary<string, EdiSchema>(StringComparer.OrdinalIgnoreCase);
 
-        foreach (var (fileType, fileName) in SchemaFiles)
+        if (!Directory.Exists(dir))
         {
-            var path = Path.Combine(dir, fileName);
-            if (!File.Exists(path))
-            {
-                LogSchemaMissing(logger, path);
-                continue;
-            }
+            LogSchemaDirectoryMissing(logger, dir);
+            _schemas = schemas.ToFrozenDictionary(StringComparer.OrdinalIgnoreCase);
+            return;
+        }
 
+        foreach (var path in Directory.EnumerateFiles(dir, "*.json", SearchOption.TopDirectoryOnly))
+        {
             try
             {
                 using var stream = File.OpenRead(path);
@@ -49,6 +48,18 @@ public sealed partial class EdiSchemaRegistry : IEdiSchemaRegistry
                 if (dto is null)
                 {
                     LogSchemaEmpty(logger, path);
+                    continue;
+                }
+
+                // Validate schema invariants at load time
+                var validationIssues = dto.Validate();
+                foreach (var issue in validationIssues)
+                    LogSchemaValidationWarning(logger, dto.SchemaKey, issue);
+
+                if (!Enum.TryParse<EdiFileType>((string?)dto.SchemaKey, ignoreCase: true, out var fileType)
+                    || fileType == EdiFileType.Unknown)
+                {
+                    LogSchemaUnknownFileType(logger, path, dto.SchemaKey);
                     continue;
                 }
 
@@ -68,12 +79,6 @@ public sealed partial class EdiSchemaRegistry : IEdiSchemaRegistry
         LogRegistryReady(logger, _schemas.Count, registeredKeys);
     }
 
-    private static readonly IReadOnlyList<(EdiFileType, string)> SchemaFiles =
-    [
-        (EdiFileType.Forecast,      "forecast.v1.json"),
-        (EdiFileType.PurchaseOrder, "purchaseorder.v1.json"),
-    ];
-
     /// <inheritdoc/>
     public EdiSchema GetSchema(string schemaKey)
     {
@@ -91,40 +96,23 @@ public sealed partial class EdiSchemaRegistry : IEdiSchemaRegistry
         return found;
     }
 
-    // ── Deserialization DTO ───────────────────────────────────────────────────
-
-    private sealed class EdiSchemaDto
-    {
-        public string SchemaKey { get; init; } = string.Empty;
-        public string SchemaVersion { get; init; } = "v1";
-
-        [JsonPropertyName("requiredHeaders")]
-        public List<string> RequiredHeaders { get; init; } = [];
-
-        [JsonPropertyName("optionalHeaders")]
-        public List<string> OptionalHeaders { get; init; } = [];
-
-        [JsonPropertyName("headerAliases")]
-        public Dictionary<string, string> HeaderAliases { get; init; } = [];
-
-        public EdiSchema ToSchema(EdiFileType fileType) => new(
-            SchemaKey: SchemaKey,
-            SchemaVersion: SchemaVersion,
-            FileType: fileType,
-            RequiredHeaders: RequiredHeaders.AsReadOnly(),
-            OptionalHeaders: OptionalHeaders.AsReadOnly(),
-            HeaderAliases: HeaderAliases);
-    }
-
     // ── LoggerMessage ─────────────────────────────────────────────────────────
 
     [LoggerMessage(Level = LogLevel.Warning,
-        Message = "EDI schema file not found: {Path}")]
-    private static partial void LogSchemaMissing(ILogger l, string path);
+        Message = "EDI schema directory not found: {Path}")]
+    private static partial void LogSchemaDirectoryMissing(ILogger l, string path);
 
     [LoggerMessage(Level = LogLevel.Warning,
         Message = "EDI schema file is empty or invalid JSON: {Path}")]
     private static partial void LogSchemaEmpty(ILogger l, string path);
+
+    [LoggerMessage(Level = LogLevel.Warning,
+        Message = "EDI schema validation warning for '{SchemaKey}': {Issue}")]
+    private static partial void LogSchemaValidationWarning(ILogger l, string schemaKey, string issue);
+
+    [LoggerMessage(Level = LogLevel.Warning,
+        Message = "EDI schema file '{Path}' has unrecognized file type key: '{SchemaKey}'")]
+    private static partial void LogSchemaUnknownFileType(ILogger l, string path, string schemaKey);
 
     [LoggerMessage(Level = LogLevel.Information,
         Message = "EDI schema loaded: {SchemaKey} v{SchemaVersion}")]

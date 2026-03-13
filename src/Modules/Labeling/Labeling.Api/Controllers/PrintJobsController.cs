@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 namespace Labeling.Api.Controllers;
 
 [ApiController]
-[Route("api/printing")]
+[Route("api/print")]
 public partial class PrintJobsController : ControllerBase
 {
     private readonly IPublishEndpoint _publishEndpoint;

@@ -1,6 +1,8 @@
 using Labeling.Application;
 using Labeling.Application.Features.PrintJobs;
+using Labeling.Application.Interfaces;
 using Labeling.Infrastructure;
+using Labeling.Infrastructure.Services;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -16,6 +18,9 @@ public static class LabelingModule
     {
         services.AddLabelingInfrastructure(config);
         services.AddLabelingApplication();
+
+        services.AddHttpContextAccessor(); // Ensure accessor is available if needed, though usually Host does this.
+
         return services;
     }
 
@@ -24,28 +29,7 @@ public static class LabelingModule
         var g = app.MapGroup("/api/v1/labeling");
         g.MapGet("/ping", () => Results.Ok("labeling-ok"));
 
-        // ── Print Jobs CQRS ──────────────────────────────────────────────
-        g.MapPost("/print-jobs", async (CreatePrintJobRequest body, IMediator mediator, CancellationToken ct) =>
-        {
-            var command = new CreatePrintJobCommand(
-                body.IdempotencyKey,
-                body.PrinterId,
-                body.ZplContent,
-                body.Copies,
-                body.RequestedBy);
-
-            var result = await mediator.Send(command, ct);
-
-            return Results.Accepted(
-                $"/api/v1/labeling/print-jobs/{result.PrintJobId}",
-                result);
-        });
-
-        g.MapGet("/print-jobs/{id:guid}", async (Guid id, IMediator mediator, CancellationToken ct) =>
-        {
-            var result = await mediator.Send(new GetPrintJobQuery(id), ct);
-            return result is null ? Results.NotFound() : Results.Ok(result);
-        });
+        // other endpoints are mapped via Controllers
 
         return app;
     }

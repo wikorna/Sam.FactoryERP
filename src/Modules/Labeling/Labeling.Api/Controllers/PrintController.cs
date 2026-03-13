@@ -30,14 +30,17 @@ public class PrintController : ControllerBase
 
         var result = await _mediator.Send(command, ct);
 
+        // Check if message indicates existing job
+        var alreadyExisted = !string.IsNullOrEmpty(result.Message);
 
         return AcceptedAtAction(nameof(GetPrintJob),
             new { jobId = result.PrintJobId },
             new
             {
                 JobId = result.PrintJobId,
-                AlreadyExisted = result.AlreadyExisted,
-                Status = result.AlreadyExisted ? "Existing" : "Queued"
+                Status = result.Status,
+                Message = result.Message,
+                AlreadyExisted = alreadyExisted
             });
     }
 

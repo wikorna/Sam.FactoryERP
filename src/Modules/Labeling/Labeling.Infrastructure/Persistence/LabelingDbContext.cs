@@ -13,6 +13,10 @@ public class LabelingDbContext : DbContext, ILabelingDbContext
 
     public DbSet<PrintJob> PrintJobs => Set<PrintJob>();
     public DbSet<Printer> Printers => Set<Printer>();
+    public DbSet<PrinterImage> PrinterImages => Set<PrinterImage>();
+    public DbSet<DepartmentPrinter> DepartmentPrinters => Set<DepartmentPrinter>();
+    public DbSet<StorePrinter> StorePrinters => Set<StorePrinter>();
+    public DbSet<UserPrinterOverride> UserPrinterOverrides => Set<UserPrinterOverride>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

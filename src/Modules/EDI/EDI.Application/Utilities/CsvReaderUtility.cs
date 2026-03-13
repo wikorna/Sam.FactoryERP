@@ -36,7 +36,8 @@ public static class CsvReaderUtility
     }
 
     /// <summary>
-    /// Split a single CSV line respecting double-quoted fields.
+    /// Split a single CSV line respecting double-quoted fields (RFC 4180 compliant).
+    /// Handles escaped quotes (<c>""</c> inside quoted fields) and preserves embedded delimiters.
     /// </summary>
     public static List<string> SplitLine(string line, char delimiter)
     {
@@ -44,12 +45,29 @@ public static class CsvReaderUtility
         var current = new StringBuilder();
         bool inQuotes = false;
 
-        foreach (char c in line)
+        for (int i = 0; i < line.Length; i++)
         {
+            char c = line[i];
+
             if (inQuotes)
             {
-                if (c == '"') inQuotes = false;
-                else current.Append(c);
+                if (c == '"')
+                {
+                    // Look ahead: if next char is also '"', it's an escaped quote
+                    if (i + 1 < line.Length && line[i + 1] == '"')
+                    {
+                        current.Append('"');
+                        i++; // skip the second quote
+                    }
+                    else
+                    {
+                        inQuotes = false; // closing quote
+                    }
+                }
+                else
+                {
+                    current.Append(c);
+                }
             }
             else
             {

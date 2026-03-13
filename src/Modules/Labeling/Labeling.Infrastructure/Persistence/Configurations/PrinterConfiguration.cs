@@ -28,6 +28,18 @@ public sealed class PrinterConfiguration : IEntityTypeConfiguration<Printer>
             .IsRequired()
             .HasDefaultValue(true);
 
+        builder.Property(x => x.Dpi)
+            .HasDefaultValue(203);
+
+        builder.Property(x => x.LabelWidthMm)
+            .HasDefaultValue(0);
+
+        builder.Property(x => x.LabelHeightMm)
+            .HasDefaultValue(0);
+
+        builder.Property(x => x.DefaultOrientation)
+            .HasDefaultValue(LabelMediaOrientation.Portrait);
+
         builder.Property(x => x.CreatedAtUtc)
             .IsRequired();
 
@@ -40,4 +52,3 @@ public sealed class PrinterConfiguration : IEntityTypeConfiguration<Printer>
             .HasDatabaseName("IX_Printers_IsEnabled");
     }
 }
-

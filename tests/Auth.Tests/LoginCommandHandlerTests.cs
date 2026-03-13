@@ -51,7 +51,7 @@ public sealed class LoginCommandHandlerTests : IDisposable
         var fakeDbSetMock = new Mock<DbSet<RefreshToken>>();
         fakeDbSetMock.Setup(x => x.Add(It.IsAny<RefreshToken>()))
             .Callback<RefreshToken>(ci => _addedRefreshTokens.Add(ci));
-        
+
         _dbMock.Setup(x => x.RefreshTokens).Returns(fakeDbSetMock.Object);
         _dbMock.Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(1);
 
@@ -338,9 +338,10 @@ public sealed class LoginCommandHandlerTests : IDisposable
                         if (_lockedOutQueue.Count == 0) _lockedOutQueue.Enqueue(locked);
                         if (locked)
                         {
-                            // Return user's LockoutEnd if set, otherwise a future date
-                            var user = _findResult;
-                            return user?.LockoutEnd ?? FutureLockout;
+                            // Always return a future date so UserManager.IsLockedOutAsync
+                            // considers the user locked (it compares lockoutEnd > UtcNow).
+                            // The handler reads user.LockoutEnd separately for the response.
+                            return FutureLockout;
                         }
                     }
                     return null;

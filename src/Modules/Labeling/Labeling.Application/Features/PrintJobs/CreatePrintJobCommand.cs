@@ -12,10 +12,3 @@ public record CreatePrintJobCommand(
     string ZplContent,
     int Copies,
     string RequestedBy) : IRequest<CreatePrintJobResult>;
-
-/// <summary>
-/// Result of <see cref="CreatePrintJobCommand"/>.
-/// </summary>
-/// <param name="PrintJobId">The job ID (new or existing if idempotent).</param>
-/// <param name="AlreadyExisted">True if the idempotency key was already present.</param>
-public record CreatePrintJobResult(Guid PrintJobId, bool AlreadyExisted);

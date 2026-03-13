@@ -22,11 +22,17 @@ public static class DependencyInjection
         // Printer transports — one per protocol
         services.AddTransient<IPrinterTransport, Raw9100PrinterTransport>();
 
+        // Renderer
+        services.AddScoped<Labeling.Application.Interfaces.IZplTemplateRenderer, Labeling.Infrastructure.Services.ZplTemplateRenderer>();
+
         // High-level printer client (resolves transport by protocol, adds retry)
         services.AddScoped<IZplPrinterClient, ZplPrinterClient>();
 
         // DbContext abstraction
         services.AddScoped<ILabelingDbContext>(sp => sp.GetRequiredService<LabelingDbContext>());
+
+        // Access Control
+        services.AddScoped<IPrinterAccessService, PrinterAccessService>();
 
         return services;
     }

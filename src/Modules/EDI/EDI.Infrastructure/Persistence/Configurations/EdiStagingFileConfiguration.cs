@@ -30,7 +30,13 @@ public class EdiStagingFileConfiguration : IEntityTypeConfiguration<EdiStagingFi
         builder.Property(x => x.ErrorMessage).HasMaxLength(1000);
         builder.Property(x => x.CorrelationId).HasMaxLength(100);
 
-        builder.Property(x => x.RowVersion).IsRowVersion();
+        //builder.Property(x => x.RowVersion).IsRowVersion();
+        // PostgreSQL concurrency token
+        builder.Property(x => x.Version)
+            .HasColumnName("xmin")
+            .HasColumnType("xid")
+            .IsRowVersion()
+            .ValueGeneratedOnAddOrUpdate();
 
         builder.HasMany(x => x.Errors)
                .WithOne(e => e.StagingFile)

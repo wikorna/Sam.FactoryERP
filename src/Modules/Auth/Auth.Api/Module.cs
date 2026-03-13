@@ -31,6 +31,9 @@ public static class AuthModule
                     }));
         });
 
+        services.AddHttpContextAccessor();
+        services.AddScoped<FactoryERP.Abstractions.Identity.ICurrentUserService, Auth.Api.Services.CurrentUserService>();
+
         return services;
     }
 

@@ -26,7 +26,7 @@ public sealed class CreatePrintJobHandler : IRequestHandler<CreatePrintJobComman
             .FirstOrDefaultAsync(j => j.IdempotencyKey == request.IdempotencyKey, cancellationToken);
 
         if (existing is not null)
-            return new CreatePrintJobResult(existing.Id, AlreadyExisted: true);
+            return new CreatePrintJobResult(existing.Id, existing.Status.ToString(), existing.IdempotencyKey, existing.CreatedAtUtc, "Job already exists.");
 
         // ── Validate printer exists and is enabled ────────────────────────
         var printer = await _dbContext.Printers
@@ -61,6 +61,6 @@ public sealed class CreatePrintJobHandler : IRequestHandler<CreatePrintJobComman
 
         await _dbContext.SaveChangesAsync(cancellationToken);
 
-        return new CreatePrintJobResult(printJob.Id, AlreadyExisted: false);
+        return new CreatePrintJobResult(printJob.Id, printJob.Status.ToString(), printJob.IdempotencyKey, printJob.CreatedAtUtc);
     }
 }

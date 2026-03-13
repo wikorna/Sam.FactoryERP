@@ -122,8 +122,9 @@
     <!-- Messaging                                             -->
     <!-- ===================================================== -->
 
-    <!-- MailKit -->
-    <PackageVersion Include="MailKit" Version="4.15.0" />
+    <!-- MailKit + MimeKit (≥4.15.1 fixes CVE-2026-30227 CRLF injection) -->
+    <PackageVersion Include="MailKit" Version="4.15.1" />
+    <PackageVersion Include="MimeKit" Version="4.15.1" />
 
     <!-- RabbitMQ -->
     <PackageVersion Include="RabbitMQ.Client" Version="7.2.0" />
@@ -132,6 +133,12 @@
     <PackageVersion Include="MassTransit.RabbitMQ" Version="8.5.8" />
     <!-- EF Core Integration (Outbox/Inbox/Transactional Bus) -->
     <PackageVersion Include="MassTransit.EntityFrameworkCore" Version="8.5.8" />
+
+    <!-- ===================================================== -->
+    <!-- Hangfire                                             -->
+    <!-- ===================================================== -->
+    <PackageVersion Include="Hangfire.AspNetCore" Version="1.8.23" />
+    <PackageVersion Include="Hangfire.PostgreSql" Version="1.21.1" />
 
     <!-- ====================================================== -->
     <!-- Serialization / Legacy                                -->

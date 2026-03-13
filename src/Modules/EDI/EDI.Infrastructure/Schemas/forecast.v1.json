@@ -2,36 +2,54 @@
   "schemaKey": "Forecast",
   "schemaVersion": "v1",
   "fileType": "Forecast",
+  "displayName": "SAP MCP Forecast",
   "filenamePrefixPattern": "^[Ff]",
   "delimiter": ",",
   "hasHeaderRow": true,
-  "skipLines": 0,
+  "hasSegmentMarkers": false,
+  "skipLines": 2,
+  "metadataLineCount": 2,
+  "metadataRowMarkers": [],
+  "metadataFields": {
+    "line0": ["_label:Transmission Date", "_label:Transmission Time", "_label:Messge ID No", "_label:Number of Item", "_label:Forecast Year", "_label:Forecast Dai No. (Mass)", "_label:Forecast Dai No. (Service)"],
+    "line1": ["Transmission Date", "Transmission Time", "Messge ID No", "Number of Item", "Forecast Year", "Forecast Dai No. (Mass)", "Forecast Dai No. (Service)"]
+  },
   "requiredHeaders": [
-    "Document No_",
-    "Item No_",
+    "Item No.",
     "Description",
-    "Quantity",
-    "Unit of Measure Code",
-    "Due Date"
+    "UM",
+    "Vendor",
+    "Material Group",
+    "Type",
+    "Plant"
   ],
   "optionalHeaders": [
-    "Variant Code",
-    "Location Code",
-    "Customer No_",
-    "Customer Name"
+    "Mat.Grp.Desc.",
+    "AprA", "AprB",
+    "MayA", "MayB",
+    "JunA", "JunB",
+    "JulA", "JulB",
+    "AugA", "AugB",
+    "SepA", "SepB",
+    "OctA", "OctB",
+    "NovA", "NovB",
+    "DecA", "DecB",
+    "JanA", "JanB",
+    "FebA", "FebB",
+    "MarA", "MarB",
+    "Total",
+    "Remark1", "Remark2", "Remark3", "Remark4"
   ],
   "headerAliases": {
-    "DocumentNo": "Document No_",
-    "Document No": "Document No_",
-    "ItemNo": "Item No_",
-    "Item No": "Item No_",
-    "Qty": "Quantity",
-    "UoM": "Unit of Measure Code",
-    "UOM": "Unit of Measure Code",
-    "DueDate": "Due Date"
+    "Item No": "Item No.",
+    "ItemNo": "Item No.",
+    "UoM": "UM",
+    "UOM": "UM",
+    "Unit of Measure": "UM"
   },
   "extractRules": {
-    "documentNo": { "source": "filename", "stripExtension": true }
+    "documentNo": { "source": "filename", "stripExtension": true },
+    "transmissionDate": { "source": "metadata", "lineIndex": 1, "fieldIndex": 0 },
+    "transmissionTime": { "source": "metadata", "lineIndex": 1, "fieldIndex": 1 }
   }
 }
-

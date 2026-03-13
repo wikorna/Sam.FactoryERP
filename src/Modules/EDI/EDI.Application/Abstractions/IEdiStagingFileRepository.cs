@@ -1,3 +1,4 @@
+using EDI.Application.Features.Files.GetEdiFileStatus;
 using EDI.Domain.Entities;
 
 namespace EDI.Application.Abstractions;
@@ -6,7 +7,8 @@ public interface IEdiStagingFileRepository
 {
     Task AddAsync(EdiStagingFile stagingFile, CancellationToken ct);
     Task<EdiStagingFile?> GetByIdAsync(Guid id, CancellationToken ct);
-    Task<EdiStagingFile?> GetByIdWithErrorsAsync(Guid id, CancellationToken ct);
+    // Optimized for status polling - returns errors count and top N errors only
+    Task<GetEdiFileStatusResult?> GetStatusAsync(Guid id, int maxErrors, CancellationToken ct);
     Task UpdateAsync(EdiStagingFile stagingFile, CancellationToken ct);
     Task SaveChangesAsync(CancellationToken ct);
     Task AddRowsAsync(IEnumerable<EdiStagingRow> rows, CancellationToken ct);

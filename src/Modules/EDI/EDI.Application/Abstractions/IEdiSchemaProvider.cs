@@ -11,7 +11,14 @@ public sealed record EdiSchema(
     EdiFileType         FileType,
     IReadOnlyList<string> RequiredHeaders,
     IReadOnlyList<string> OptionalHeaders,
-    IReadOnlyDictionary<string, string> HeaderAliases);
+    IReadOnlyDictionary<string, string> HeaderAliases,
+    bool                HasSegmentMarkers = false,
+    string?             HeaderRowMarker   = null,
+    int                 SegmentMarkerColumn = 0,
+    IReadOnlyList<string>? MetadataRowMarkers = null,
+    IReadOnlyDictionary<string, IReadOnlyList<string>>? MetadataFields = null,
+    string?             DisplayName = null,
+    int                 SkipLines = 0);
 
 /// <summary>
 /// Provides EDI file schemas keyed by <see cref="EdiFileType"/>.

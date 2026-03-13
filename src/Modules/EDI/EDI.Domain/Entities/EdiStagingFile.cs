@@ -17,27 +17,28 @@ public class EdiStagingFile
     public string StorageKey { get; set; } = string.Empty;
     public string? UploadedByUserId { get; set; }
     public DateTime UploadedAtUtc { get; set; }
-    
+
     public EdiStagingStatus Status { get; set; }
     public int ProgressPercent { get; set; }
-    
+
     public int? RowCountTotal { get; set; }
     public int? RowCountProcessed { get; set; }
-    
+
     // JSON properties
     public string? DetectResultJson { get; set; }
     public string? ValidationResultJson { get; set; }
-    
+
     public string? ErrorCode { get; set; }
     public string? ErrorMessage { get; set; }
     public string? CorrelationId { get; set; }
-    
+
     public DateTime CreatedAtUtc { get; set; }
     public DateTime UpdatedAtUtc { get; set; }
 
     // Concurrency Token
-    public byte[] RowVersion { get; set; } = [];
-    
+    //public byte[] RowVersion { get; set; } = [];
+    public uint Version { get; private set; }
+
     // Virtual collection for associated errors
     public ICollection<EdiStagingFileError> Errors { get; set; } = new List<EdiStagingFileError>();
 }

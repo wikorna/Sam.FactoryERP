@@ -8,9 +8,12 @@ using Labeling.Infrastructure.Persistence;
 using EDI.Infrastructure;
 using EDI.Infrastructure.Worker;
 using EDI.Application;
+using Labeling.Application.Interfaces;
 using Serilog;
 using Serilog.Events;
 using DbFingerprint = FactoryERP.WorkerHost.DbFingerprint;
+using FactoryERP.Abstractions.Identity;
+using FactoryERP.WorkerHost.Auth;
 
 
 var builder = Host.CreateApplicationBuilder(args);
@@ -35,6 +38,9 @@ builder.Services.AddSerilog((services, cfg) =>
     cfg.ReadFrom.Configuration(builder.Configuration)
        .ReadFrom.Services(services)
        .Enrich.FromLogContext());
+
+// Background worker has no request context; provide a system-level identity
+builder.Services.AddSingleton<ICurrentUserService, WorkerCurrentUserService>();
 
 builder.Services.AddLabelingInfrastructure(builder.Configuration);
 builder.Services.AddEdiApplication();

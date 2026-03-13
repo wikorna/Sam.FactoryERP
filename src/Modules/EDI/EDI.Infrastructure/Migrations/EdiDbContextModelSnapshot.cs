@@ -460,12 +460,6 @@ namespace EDI.Infrastructure.Migrations
                     b.Property<int?>("RowCountTotal")
                         .HasColumnType("integer");
 
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("bytea");
-
                     b.Property<string>("SchemaKey")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -510,7 +504,25 @@ namespace EDI.Infrastructure.Migrations
                     b.Property<string>("ValidationResultJson")
                         .HasColumnType("jsonb");
 
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("ClientId")
+                        .HasDatabaseName("IX_EdiStagingFiles_ClientId");
+
+                    b.HasIndex("FileType")
+                        .HasDatabaseName("IX_EdiStagingFiles_FileType");
+
+                    b.HasIndex("Status")
+                        .HasDatabaseName("IX_EdiStagingFiles_Status");
+
+                    b.HasIndex("Status", "CreatedAtUtc")
+                        .HasDatabaseName("IX_EdiStagingFiles_Status_CreatedAt");
 
                     b.ToTable("EdiStagingFiles", "edi");
                 });

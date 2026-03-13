@@ -18,4 +18,10 @@ public interface IZplPrinterClient
     /// <param name="zplContent">Raw ZPL content to send.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     Task SendZplAsync(Printer printer, string zplContent, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Sends raw binary data to the specified printer.
+    /// Used for image uploads (~DY command).
+    /// </summary>
+    Task SendRawAsync(Printer printer, byte[] data, CancellationToken cancellationToken = default);
 }

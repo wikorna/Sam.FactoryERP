@@ -91,13 +91,50 @@ public sealed partial class ZplPrinterClient : IZplPrinterClient
         LogZplSent(printer.Name);
     }
 
+    public async Task SendRawAsync(Printer printer, byte[] data, CancellationToken cancellationToken = default)
+    {
+        if (!printer.IsEnabled)
+            throw new PermanentPrinterException(printer.Id.ToString(), $"Printer '{printer.Name}' is disabled.");
+
+        if (!_transports.TryGetValue(printer.Protocol, out var transport))
+            throw new PermanentPrinterException(printer.Id.ToString(), $"No transport registered for protocol '{printer.Protocol}'.");
+
+        LogSendingRaw(printer.Name, printer.Host, printer.Port, data.Length);
+
+        try
+        {
+            await _retryPipeline.ExecuteAsync(async ct =>
+            {
+                await transport.SendRawAsync(printer.Host, printer.Port, data, ct);
+            }, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            // Consistent exception handling
+            if (ex is SocketException || ex is TimeoutException)
+                throw new TransientPrinterException(printer.Id.ToString(), $"Network error sending raw data to {printer.Host}:{printer.Port}: {ex.Message}", ex);
+
+            throw new PermanentPrinterException(printer.Id.ToString(), $"Unexpected error sending raw data: {ex.Message}", ex);
+        }
+
+        LogRawSent(printer.Name, data.Length);
+    }
+
     [LoggerMessage(Level = LogLevel.Information,
         Message = "Sending ZPL to printer {PrinterName} at {Host}:{Port}")]
     private partial void LogSendingZpl(string printerName, string host, int port);
 
     [LoggerMessage(Level = LogLevel.Information,
+        Message = "Sending {Bytes} bytes of raw data to printer {PrinterName} at {Host}:{Port}")]
+    private partial void LogSendingRaw(string printerName, string host, int port, int bytes);
+
+    [LoggerMessage(Level = LogLevel.Information,
         Message = "ZPL sent successfully to printer {PrinterName}")]
     private partial void LogZplSent(string printerName);
+
+    [LoggerMessage(Level = LogLevel.Information,
+        Message = "Raw data ({Bytes} bytes) sent successfully to printer {PrinterName}")]
+    private partial void LogRawSent(string printerName, int bytes);
 
     [LoggerMessage(Level = LogLevel.Warning,
         Message = "Retry attempt {AttemptNumber} for printer {Printer} — {ErrorMessage}")]

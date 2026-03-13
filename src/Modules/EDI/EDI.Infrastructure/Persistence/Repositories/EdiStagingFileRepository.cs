@@ -1,4 +1,5 @@
 using EDI.Application.Abstractions;
+using EDI.Application.Features.Files.GetEdiFileStatus;
 using EDI.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,12 +18,44 @@ public sealed class EdiStagingFileRepository(EdiDbContext dbContext) : IEdiStagi
         return dbContext.EdiStagingFiles.FirstOrDefaultAsync(x => x.Id == id, ct);
     }
 
-    public Task<EdiStagingFile?> GetByIdWithErrorsAsync(Guid id, CancellationToken ct)
+    public async Task<GetEdiFileStatusResult?> GetStatusAsync(Guid id, int maxErrors, CancellationToken ct)
     {
-        return dbContext.EdiStagingFiles
-            .Include(x => x.Errors)
+        var file = await dbContext.EdiStagingFiles
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == id, ct);
+
+        if (file is null) return null;
+
+        var errorCount = await dbContext.EdiStagingFileErrors
+            .AsNoTracking()
+            .CountAsync(x => x.StagingFileId == id, ct);
+
+        var errors = await dbContext.EdiStagingFileErrors
+            .AsNoTracking()
+            .Where(x => x.StagingFileId == id)
+            .OrderBy(x => x.RowNumber)
+            .Take(maxErrors)
+            .Select(e => new EdiFileErrorSummary(
+                e.Code,
+                e.Message,
+                e.RowNumber,
+                e.ColumnName,
+                e.Severity.ToString()
+            ))
+            .ToListAsync(ct);
+
+        return new GetEdiFileStatusResult(
+            StagingId: file.Id,
+            Status: file.Status.ToString(),
+            ProgressPercent: file.ProgressPercent,
+            RowCountTotal: file.RowCountTotal,
+            RowCountProcessed: file.RowCountProcessed,
+            FileName: file.OriginalFileName,
+            ErrorCode: file.ErrorCode,
+            ErrorMessage: file.ErrorMessage,
+            ErrorCount: errorCount,
+            Errors: errors
+        );
     }
 
     public Task UpdateAsync(EdiStagingFile stagingFile, CancellationToken ct)
