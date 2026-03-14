@@ -11,5 +11,6 @@ public interface ILabelingDbContext
     DbSet<DepartmentPrinter> DepartmentPrinters { get; }
     DbSet<StorePrinter> StorePrinters { get; }
     DbSet<UserPrinterOverride> UserPrinterOverrides { get; }
+    DbSet<LabelTemplate> LabelTemplates { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

@@ -51,7 +51,14 @@ public static class DependencyInjection
     public static IBusRegistrationConfigurator AddNotificationApiHostConsumers(
         this IBusRegistrationConfigurator cfg)
     {
+        // Pushes generic persistent notifications to the inbox
         cfg.AddConsumer<NotificationSignalRPushConsumer>();
+
+        // Pushes transient print pipeline status updates (Queued, Printed, Failed)
+        cfg.AddConsumer<ShipmentBatchPrintQueuedSignalRConsumer>();
+        cfg.AddConsumer<ShipmentItemPrintedSignalRConsumer>();
+        cfg.AddConsumer<ShipmentItemPrintFailedSignalRConsumer>();
+
         return cfg;
     }
 }

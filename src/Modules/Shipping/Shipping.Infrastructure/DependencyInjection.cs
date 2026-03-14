@@ -25,6 +25,11 @@ public static class DependencyInjection
         services.AddScoped<IShipmentCsvParser, ShipmentCsvParser>();
         services.AddScoped<IBatchNumberGenerator, SequentialBatchNumberGenerator>();
 
+        // Printer/template resolution for print dispatch consumer
+        services.Configure<ShippingPrintOptions>(
+            configuration.GetSection(ShippingPrintOptions.SectionName));
+        services.AddScoped<IShipmentPrinterResolver, ConfigurationShipmentPrinterResolver>();
+
         return services;
     }
 }

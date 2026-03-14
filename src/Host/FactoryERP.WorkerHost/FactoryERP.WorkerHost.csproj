@@ -30,6 +30,8 @@
     <ProjectReference Include="..\..\Modules\EDI\EDI.Infrastructure\EDI.Infrastructure.csproj" />
     <ProjectReference Include="..\..\Modules\EDI\EDI.Application\EDI.Application.csproj" />
     <ProjectReference Include="..\..\Modules\Notification\Notification.Infrastructure\Notification.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Modules\Shipping\Shipping.Infrastructure\Shipping.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Modules\Printing\Printing.Infrastructure\Printing.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>

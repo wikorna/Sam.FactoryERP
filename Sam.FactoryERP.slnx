@@ -48,6 +48,10 @@
     <Project Path="src/Modules/Notification/Notification.Domain/Notification.Domain.csproj" />
     <Project Path="src/Modules/Notification/Notification.Infrastructure/Notification.Infrastructure.csproj" />
   </Folder>
+  <Folder Name="/src/Modules/Printing/">
+    <Project Path="src/Modules/Printing/Printing.Application/Printing.Application.csproj" />
+    <Project Path="src/Modules/Printing/Printing.Infrastructure/Printing.Infrastructure.csproj" />
+  </Folder>
   <Folder Name="/src/Modules/Production/">
     <Project Path="src/Modules/Production/Production.Api/Production.Api.csproj" />
     <Project Path="src/Modules/Production/Production.Application/Production.Application.csproj" />
@@ -89,6 +93,8 @@
     <Project Path="tests/FactoryERP.ArchTests/FactoryERP.ArchTests.csproj" />
     <Project Path="tests/Auth.Tests/Auth.Tests.csproj" />
     <Project Path="tests/Labeling.Tests/Labeling.Tests.csproj" />
+    <Project Path="tests/Notification.Tests/Notification.Tests.csproj" />
+    <Project Path="tests/Printing.Tests/Printing.Tests.csproj" />
     <Project Path="tests/Shipping.Tests/Shipping.Tests.csproj" />
   </Folder>
 </Solution>

@@ -18,6 +18,11 @@ using Notification.Application;
 using Notification.Infrastructure;
 using Serilog;
 using Serilog.Events;
+using Shipping.Application.Extensions;
+using Shipping.Infrastructure;
+using Shipping.Infrastructure.Consumers;
+using Printing.Infrastructure;
+using Printing.Infrastructure.Consumers;
 using FactoryERP.WorkerHost.Auth;
 using DbFingerprint = FactoryERP.WorkerHost.DbFingerprint;
 
@@ -60,6 +65,13 @@ builder.Services.AddLabelingInfrastructure(builder.Configuration);
 builder.Services.AddEdiApplication();
 builder.Services.AddEdiInfrastructure(builder.Configuration);
 
+// Shipping module (application handlers + infrastructure services + print resolver)
+builder.Services.AddShippingApplication();
+builder.Services.AddShippingInfrastructure(builder.Configuration);
+
+// Printing module — QR payload, template rendering, printer dispatch
+builder.Services.AddPrintingInfrastructure();
+
 // Notification module (application handlers + infrastructure services)
 builder.Services.AddNotificationApplication();
 builder.Services.AddNotificationInfrastructure(builder.Configuration);
@@ -86,6 +98,10 @@ builder.Services.AddFactoryErpMessaging<LabelingDbContext>(
     {
         cfg.AddConsumer<QrPrintRequestedConsumer>();
         cfg.AddConsumer<PrintZplCommandConsumer>();
+        // Shipping — orchestrates QR label printing for approved shipment batches
+        cfg.AddConsumer<ShipmentApprovedForPrintingConsumer>();
+        // Printing — QR build + ZPL render + Zebra dispatch per shipment item
+        cfg.AddConsumer<PrintShipmentItemConsumer>();
         // Notification consumers — create persistent notifications from domain events
         cfg.AddNotificationWorkerConsumers();
     });

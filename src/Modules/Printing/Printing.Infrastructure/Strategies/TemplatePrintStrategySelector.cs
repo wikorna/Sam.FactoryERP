@@ -1,0 +1,50 @@
+using Microsoft.Extensions.Logging;
+using Printing.Application.Abstractions;
+using Printing.Application.Models;
+
+namespace Printing.Infrastructure.Strategies;
+
+/// <summary>
+/// Selects the correct <see cref="ITemplatePrintStrategy"/> based on the
+/// <see cref="LabelTemplateSpec.Version"/> of the resolved template.
+/// Falls back to the first registered strategy when no exact version match is found.
+/// </summary>
+public sealed partial class TemplatePrintStrategySelector(
+    IEnumerable<ITemplatePrintStrategy> strategies,
+    ILogger<TemplatePrintStrategySelector> logger)
+{
+    private readonly List<ITemplatePrintStrategy> _strategies = strategies.ToList();
+
+    /// <summary>
+    /// Returns the strategy that declares support for <paramref name="version"/>,
+    /// or the first registered strategy as a safe fallback.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown when no strategies are registered at all (misconfiguration).
+    /// </exception>
+    public ITemplatePrintStrategy Select(string version)
+    {
+        if (_strategies.Count == 0)
+            throw new InvalidOperationException(
+                "No ITemplatePrintStrategy implementations are registered. " +
+                "Call AddPrintingInfrastructure() in your DI setup.");
+
+        var match = _strategies
+            .FirstOrDefault(s => s.SupportedVersions
+                .Any(v => string.Equals(v, version, StringComparison.OrdinalIgnoreCase)));
+
+        if (match is not null)
+            return match;
+
+        // Fallback — first strategy acts as the default.
+        var fallback = _strategies[0];
+        LogFallbackStrategy(logger, version, fallback.GetType().Name);
+        return fallback;
+    }
+
+    [LoggerMessage(Level = LogLevel.Warning,
+        Message = "No strategy found for template version '{Version}'. Falling back to '{FallbackStrategy}'.")]
+    private static partial void LogFallbackStrategy(
+        ILogger logger, string version, string fallbackStrategy);
+}
+
