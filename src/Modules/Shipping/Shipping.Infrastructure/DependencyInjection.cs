@@ -2,8 +2,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Shipping.Application.Abstractions;
+using Shipping.Infrastructure.Parsers;
 using Shipping.Infrastructure.Persistence;
 using Shipping.Infrastructure.Persistence.Repositories;
+using Shipping.Infrastructure.Services;
 
 namespace Shipping.Infrastructure;
 
@@ -20,6 +22,8 @@ public static class DependencyInjection
 
         services.AddScoped<IShippingDbContext>(sp => sp.GetRequiredService<ShippingDbContext>());
         services.AddScoped<IShipmentBatchRepository, ShipmentBatchRepository>();
+        services.AddScoped<IShipmentCsvParser, ShipmentCsvParser>();
+        services.AddScoped<IBatchNumberGenerator, SequentialBatchNumberGenerator>();
 
         return services;
     }

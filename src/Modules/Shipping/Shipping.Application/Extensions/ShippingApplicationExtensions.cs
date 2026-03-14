@@ -1,4 +1,4 @@
-using System.Reflection;
+using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Shipping.Application.Extensions;
@@ -11,6 +11,7 @@ public static class ShippingApplicationExtensions
     {
         var assembly = typeof(FactoryERP.Modules.Shipping.Application.AssemblyMarker).Assembly;
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(assembly));
+        services.AddValidatorsFromAssembly(assembly, includeInternalTypes: true);
         return services;
     }
 }

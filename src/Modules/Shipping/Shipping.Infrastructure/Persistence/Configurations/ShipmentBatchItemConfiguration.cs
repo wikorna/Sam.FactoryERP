@@ -1,4 +1,5 @@
 using Shipping.Domain.Aggregates.ShipmentBatchAggregate;
+using Shipping.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -11,6 +12,8 @@ public sealed class ShipmentBatchItemConfiguration : IEntityTypeConfiguration<Sh
     {
         builder.ToTable("ShipmentBatchItems");
         builder.HasKey(x => x.Id);
+
+        // ...existing property configs...
 
         builder.Property(x => x.ShipmentBatchId)
             .IsRequired();
@@ -60,6 +63,15 @@ public sealed class ShipmentBatchItemConfiguration : IEntityTypeConfiguration<Sh
         builder.Property(x => x.IsPrinted)
             .IsRequired()
             .HasDefaultValue(false);
+
+        builder.Property(x => x.ReviewStatus)
+            .IsRequired()
+            .HasConversion<string>()
+            .HasMaxLength(20)
+            .HasDefaultValue(ItemReviewStatus.Pending);
+
+        builder.Property(x => x.ExclusionReason)
+            .HasMaxLength(2000);
 
         builder.Property(x => x.RowVersion)
             .IsRowVersion();

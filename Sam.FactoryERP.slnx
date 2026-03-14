@@ -89,5 +89,6 @@
     <Project Path="tests/FactoryERP.ArchTests/FactoryERP.ArchTests.csproj" />
     <Project Path="tests/Auth.Tests/Auth.Tests.csproj" />
     <Project Path="tests/Labeling.Tests/Labeling.Tests.csproj" />
+    <Project Path="tests/Shipping.Tests/Shipping.Tests.csproj" />
   </Folder>
 </Solution>

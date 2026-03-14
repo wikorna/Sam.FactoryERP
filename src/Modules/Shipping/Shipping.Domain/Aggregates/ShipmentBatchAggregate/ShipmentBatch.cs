@@ -102,6 +102,7 @@ public sealed class ShipmentBatch : AuditableEntity
     /// <summary>Adds a line item. Only allowed while the batch is in <see cref="ShipmentBatchStatus.Draft"/>.</summary>
     public ShipmentBatchItem AddItem(
         int lineNumber,
+        string customerCode,
         string partNo,
         string productName,
         string description,
@@ -119,6 +120,7 @@ public sealed class ShipmentBatch : AuditableEntity
         var item = ShipmentBatchItem.Create(
             shipmentBatchId: Id,
             lineNumber: lineNumber,
+            customerCode: customerCode,
             partNo: partNo,
             productName: productName,
             description: description,
@@ -196,6 +198,64 @@ public sealed class ShipmentBatch : AuditableEntity
         AddDomainEvent(new ShipmentBatchRejected(Id, BatchNumber, reviewerUserId, reason));
     }
 
+    /// <summary>
+    /// Warehouse partially approves the batch — some items approved, others excluded.
+    /// </summary>
+    /// <param name="reviewerUserId">Reviewer's user ID.</param>
+    /// <param name="approvedItemIds">Set of item IDs that are approved. All others are excluded.</param>
+    /// <param name="excludedItemReasons">Optional per-item exclusion reasons keyed by item ID.</param>
+    /// <param name="comment">Optional reviewer comment.</param>
+    public void PartiallyApprove(
+        Guid reviewerUserId,
+        IReadOnlySet<Guid> approvedItemIds,
+        IReadOnlyDictionary<Guid, string>? excludedItemReasons = null,
+        string? comment = null)
+    {
+        EnsureStatus(ShipmentBatchStatus.UnderReview, "partially approve");
+
+        if (approvedItemIds.Count == 0)
+            throw new InvalidOperationException("At least one item must be approved for partial approval. Use Reject() to reject the entire batch.");
+
+        if (approvedItemIds.Count == _items.Count)
+            throw new InvalidOperationException("All items are approved. Use Approve() for full approval.");
+
+        // Validate all IDs exist in this batch.
+        var itemIds = _items.Select(i => i.Id).ToHashSet();
+        var unknownIds = approvedItemIds.Where(id => !itemIds.Contains(id)).ToList();
+        if (unknownIds.Count > 0)
+            throw new InvalidOperationException(
+                $"Item IDs not found in this batch: {string.Join(", ", unknownIds)}.");
+
+        int approvedCount = 0;
+        int excludedCount = 0;
+
+        foreach (var item in _items)
+        {
+            if (approvedItemIds.Contains(item.Id))
+            {
+                item.ApproveItem();
+                approvedCount++;
+            }
+            else
+            {
+                var reason = excludedItemReasons is not null
+                    && excludedItemReasons.TryGetValue(item.Id, out var r) ? r : null;
+                item.ExcludeItem(reason);
+                excludedCount++;
+            }
+        }
+
+        Status = ShipmentBatchStatus.Approved;
+        ReviewDecision = WarehouseReviewDecision.PartiallyApproved;
+        ReviewedByUserId = reviewerUserId;
+        ReviewedAtUtc = DateTime.UtcNow;
+        ReviewComment = comment;
+        ModifiedAtUtc = DateTime.UtcNow;
+
+        AddDomainEvent(new ShipmentBatchPartiallyApproved(
+            Id, BatchNumber, reviewerUserId, approvedCount, excludedCount));
+    }
+
     /// <summary>Assigns the printer and template, then marks as ready for print.</summary>
     public void PrepareForPrint(Guid printerId, Guid labelTemplateId)
     {
@@ -250,6 +310,12 @@ public sealed class ShipmentBatch : AuditableEntity
         ReviewedAtUtc = null;
         ReviewComment = null;
         ModifiedAtUtc = DateTime.UtcNow;
+
+        // Reset item-level review decisions.
+        foreach (var item in _items)
+        {
+            item.ResetReview();
+        }
     }
 
     // ── Guards ─────────────────────────────────────────────────────────────

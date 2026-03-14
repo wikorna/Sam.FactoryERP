@@ -1,4 +1,5 @@
 using FactoryERP.SharedKernel.SeedWork;
+using Shipping.Domain.Enums;
 
 namespace Shipping.Domain.Aggregates.ShipmentBatchAggregate;
 
@@ -18,6 +19,9 @@ public sealed class ShipmentBatchItem : BaseEntity
 
     /// <summary>1-based line number from the source CSV.</summary>
     public int LineNumber { get; private set; }
+
+    /// <summary>Customer code / customer identifier from the source CSV.</summary>
+    public string CustomerCode { get; private set; } = string.Empty;
 
     /// <summary>Part number / SKU.</summary>
     public string PartNo { get; private set; } = string.Empty;
@@ -61,6 +65,12 @@ public sealed class ShipmentBatchItem : BaseEntity
     /// <summary>Timestamp when the item was printed.</summary>
     public DateTime? PrintedAtUtc { get; private set; }
 
+    /// <summary>Item-level review status set during partial approval.</summary>
+    public ItemReviewStatus ReviewStatus { get; private set; }
+
+    /// <summary>Reason the item was excluded (set during partial approval).</summary>
+    public string? ExclusionReason { get; private set; }
+
     // ── Navigation ────────────────────────────────────────────────────────
     /// <summary>Parent batch (EF navigation).</summary>
     public ShipmentBatch? ShipmentBatch { get; private set; }
@@ -72,6 +82,7 @@ public sealed class ShipmentBatchItem : BaseEntity
     internal static ShipmentBatchItem Create(
         Guid shipmentBatchId,
         int lineNumber,
+        string customerCode,
         string partNo,
         string productName,
         string description,
@@ -84,6 +95,7 @@ public sealed class ShipmentBatchItem : BaseEntity
         string? qrPayload,
         string? remarks)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(customerCode);
         ArgumentException.ThrowIfNullOrWhiteSpace(partNo);
         ArgumentException.ThrowIfNullOrWhiteSpace(productName);
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(quantity);
@@ -93,6 +105,7 @@ public sealed class ShipmentBatchItem : BaseEntity
             Id = Guid.NewGuid(),
             ShipmentBatchId = shipmentBatchId,
             LineNumber = lineNumber,
+            CustomerCode = customerCode,
             PartNo = partNo,
             ProductName = productName,
             Description = description,
@@ -123,6 +136,27 @@ public sealed class ShipmentBatchItem : BaseEntity
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(copies);
         ArgumentOutOfRangeException.ThrowIfGreaterThan(copies, 100);
         LabelCopies = copies;
+    }
+
+    /// <summary>Marks this item as approved during partial approval.</summary>
+    internal void ApproveItem()
+    {
+        ReviewStatus = ItemReviewStatus.Approved;
+        ExclusionReason = null;
+    }
+
+    /// <summary>Marks this item as excluded during partial approval.</summary>
+    internal void ExcludeItem(string? reason)
+    {
+        ReviewStatus = ItemReviewStatus.Excluded;
+        ExclusionReason = reason;
+    }
+
+    /// <summary>Resets item-level review status (used when reverting to draft).</summary>
+    internal void ResetReview()
+    {
+        ReviewStatus = ItemReviewStatus.Pending;
+        ExclusionReason = null;
     }
 }
 

@@ -94,7 +94,8 @@ builder.Services
     // Discover [ApiController] classes from module assemblies that are not auto-loaded
     // by the host because they are separate class-library projects (not .Web SDK).
     .AddApplicationPart(typeof(EDI.Api.Controllers.EdiFilesController).Assembly)
-    .AddApplicationPart(typeof(Notification.Api.Controllers.NotificationsController).Assembly);
+    .AddApplicationPart(typeof(Notification.Api.Controllers.NotificationsController).Assembly)
+    .AddApplicationPart(typeof(Shipping.Api.Controllers.ShipmentBatchesController).Assembly);
 
 // Raise multipart body limit to 10 MB (same as the controller's file-size guard)
 builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(opt =>

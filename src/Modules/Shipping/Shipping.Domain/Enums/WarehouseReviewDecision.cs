@@ -15,5 +15,8 @@ public enum WarehouseReviewDecision
 
     /// <summary>Warehouse rejected the batch; Marketing must revise.</summary>
     Rejected = 2,
+
+    /// <summary>Warehouse approved some items and excluded others.</summary>
+    PartiallyApproved = 3,
 }
 
