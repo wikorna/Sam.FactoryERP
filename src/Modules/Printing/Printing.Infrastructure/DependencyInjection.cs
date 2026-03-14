@@ -1,5 +1,7 @@
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Printing.Application.Abstractions;
+using Printing.Infrastructure.Persistence;
 using Printing.Infrastructure.Services;
 using Printing.Infrastructure.Strategies;
 
@@ -14,8 +16,11 @@ public static class DependencyInjection
     /// <c>AddShippingInfrastructure</c>, since it depends on both.
     /// </summary>
     public static IServiceCollection AddPrintingInfrastructure(
-        this IServiceCollection services)
+        this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddDbContext<PrintingDbContext>(options =>
+            options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
+
         // QR payload
         services.AddSingleton<IQrPayloadBuilder, ShipmentQrPayloadBuilder>();
 
@@ -34,4 +39,3 @@ public static class DependencyInjection
         return services;
     }
 }
-
