@@ -15,7 +15,7 @@ namespace Auth.Application.Features.RefreshToken;
 /// If a revoked token is replayed, the entire token family is revoked
 /// and the user must re-authenticate (bank-grade protection against token theft).
 /// </summary>
-public sealed partial class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, AuthTokenResponse>
+public sealed class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, AuthTokenResponse>
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IAuthDbContext _db;
@@ -135,13 +135,9 @@ public sealed partial class RefreshTokenCommandHandler : IRequestHandler<Refresh
         return Convert.ToHexStringLower(bytes);
     }
 
-    [LoggerMessage(Level = LogLevel.Warning, Message = "Refresh token failed: {Reason}")]
-    private static partial void LogRefreshFailed(ILogger logger, string reason);
+    private static void LogRefreshFailed(ILogger logger, string reason) => logger.LogWarning("Refresh token failed: {Reason}", reason);
 
-    [LoggerMessage(Level = LogLevel.Error,
-        Message = "Refresh token reuse detected! Family={Family}, UserId={UserId}. Revoking entire family.")]
-    private static partial void LogTokenReuse(ILogger logger, Guid family, Guid userId);
+    private static void LogTokenReuse(ILogger logger, Guid family, Guid userId) => logger.LogError("Refresh token reuse detected! Family={Family}, UserId={UserId}. Revoking entire family.", family, userId);
 
-    [LoggerMessage(Level = LogLevel.Information, Message = "Refresh token rotated for UserId={UserId}")]
-    private static partial void LogRefreshSuccess(ILogger logger, Guid userId);
+    private static void LogRefreshSuccess(ILogger logger, Guid userId) => logger.LogInformation("Refresh token rotated for UserId={UserId}", userId);
 }

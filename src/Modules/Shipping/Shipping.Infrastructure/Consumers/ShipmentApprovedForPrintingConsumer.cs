@@ -20,7 +20,7 @@ namespace Shipping.Infrastructure.Consumers;
 /// <see cref="PrintShipmentItemCommand"/> consumer uses its own <c>IdempotencyKey</c>
 /// (<c>"{BatchId}:{ItemId}"</c>) to detect and skip duplicates.</para>
 /// </remarks>
-public sealed partial class ShipmentApprovedForPrintingConsumer(
+public sealed class ShipmentApprovedForPrintingConsumer(
     IShipmentBatchRepository repository,
     IShipmentPrinterResolver printerResolver,
     IPublishEndpoint publishEndpoint,
@@ -113,26 +113,14 @@ public sealed partial class ShipmentApprovedForPrintingConsumer(
 
     // ── Structured log messages ───────────────────────────────────────────
 
-    [LoggerMessage(Level = LogLevel.Information,
-        Message = "Consuming ShipmentApprovedForPrintingEvent: BatchId={BatchId}, BatchNumber={BatchNumber}, Decision={ReviewDecision}")]
-    private static partial void LogConsuming(
-        ILogger logger, Guid batchId, string batchNumber, string reviewDecision);
+    private static void LogConsuming(ILogger logger, Guid batchId, string batchNumber, string reviewDecision) => logger.LogInformation("Consuming ShipmentApprovedForPrintingEvent: BatchId={BatchId}, BatchNumber={BatchNumber}, Decision={ReviewDecision}", batchId, batchNumber, reviewDecision);
 
-    [LoggerMessage(Level = LogLevel.Warning,
-        Message = "Shipment batch {BatchId} not found — skipping print dispatch.")]
-    private static partial void LogBatchNotFound(ILogger logger, Guid batchId);
+    private static void LogBatchNotFound(ILogger logger, Guid batchId) => logger.LogWarning("Shipment batch {BatchId} not found — skipping print dispatch.", batchId);
 
-    [LoggerMessage(Level = LogLevel.Information,
-        Message = "Shipment batch {BatchId} already in status '{Status}' — idempotent skip.")]
-    private static partial void LogAlreadyProcessed(ILogger logger, Guid batchId, ShipmentBatchStatus status);
+    private static void LogAlreadyProcessed(ILogger logger, Guid batchId, ShipmentBatchStatus status) => logger.LogInformation("Shipment batch {BatchId} already in status '{Status}' — idempotent skip.", batchId, status);
 
-    [LoggerMessage(Level = LogLevel.Information,
-        Message = "Dispatching {ItemCount} PrintShipmentItemCommand(s) for batch {BatchId}.")]
-    private static partial void LogDispatchingCommands(ILogger logger, Guid batchId, int itemCount);
+    private static void LogDispatchingCommands(ILogger logger, Guid batchId, int itemCount) => logger.LogInformation("Dispatching {ItemCount} PrintShipmentItemCommand(s) for batch {BatchId}.", batchId, itemCount);
 
-    [LoggerMessage(Level = LogLevel.Information,
-        Message = "Print dispatch complete: BatchId={BatchId}, BatchNumber={BatchNumber}, ItemCount={ItemCount}.")]
-    private static partial void LogCompleted(
-        ILogger logger, Guid batchId, string batchNumber, int itemCount);
+    private static void LogCompleted(ILogger logger, Guid batchId, string batchNumber, int itemCount) => logger.LogInformation("Print dispatch complete: BatchId={BatchId}, BatchNumber={BatchNumber}, ItemCount={ItemCount}.", batchId, batchNumber, itemCount);
 }
 

@@ -20,7 +20,7 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsAsErrors>$(WarningsAsErrors);CS*;CA*;SA*</WarningsAsErrors>
 
-    <!-- 1591 = missing XML docs; CA1861 = constant arrays in generated EF migrations -->
-    <NoWarn>$(NoWarn);1591;CA1861</NoWarn>
+    <!-- 1591 = missing XML docs; CA1861 = constant arrays in generated EF migrations; CA1848/CA1873 = LoggerMessage.Define migration in progress; CA1707 = underscore in EF migration class names -->
+    <NoWarn>$(NoWarn);1591;CA1848;CA1861;CA1873;CA1707</NoWarn>
   </PropertyGroup>
 </Project>

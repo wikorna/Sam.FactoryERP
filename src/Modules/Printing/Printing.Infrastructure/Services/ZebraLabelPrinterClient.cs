@@ -25,7 +25,7 @@ namespace Printing.Infrastructure.Services;
 /// independently and are selected by the DI container — no consumer changes required.
 /// </para>
 /// </remarks>
-public sealed partial class ZebraLabelPrinterClient : ILabelPrinterClient
+public sealed class ZebraLabelPrinterClient : ILabelPrinterClient
 {
     private static readonly TimeSpan ConnectTimeout = TimeSpan.FromSeconds(10);
     private static readonly TimeSpan WriteTimeout   = TimeSpan.FromSeconds(15);
@@ -111,17 +111,31 @@ public sealed partial class ZebraLabelPrinterClient : ILabelPrinterClient
         }
     }
 
-    [LoggerMessage(Level = LogLevel.Information,
-        Message = "Dispatching label {IdempotencyKey} to printer '{PrinterName}' ({Host}:{Port}), copies={Copies}")]
-    private static partial void LogDispatching(
-        ILogger l, string idempotencyKey, string printerName, string host, int port, int copies);
+    private static readonly Action<ILogger, string, string, string, int, int, Exception?> _logDispatching =
+        LoggerMessage.Define<string, string, string, int, int>(
+            LogLevel.Information,
+            new EventId(3501, nameof(LogDispatching)),
+            "Dispatching label {IdempotencyKey} to printer '{PrinterName}' ({Host}:{Port}), copies={Copies}");
 
-    [LoggerMessage(Level = LogLevel.Information,
-        Message = "Label {IdempotencyKey} dispatched to printer '{PrinterName}' successfully.")]
-    private static partial void LogDispatched(ILogger l, string idempotencyKey, string printerName);
+    private static readonly Action<ILogger, string, string, Exception?> _logDispatched =
+        LoggerMessage.Define<string, string>(
+            LogLevel.Information,
+            new EventId(3502, nameof(LogDispatched)),
+            "Label {IdempotencyKey} dispatched to printer '{PrinterName}' successfully.");
 
-    [LoggerMessage(Level = LogLevel.Warning,
-        Message = "Printer connection attempt {Attempt} failed: {Reason}. Retrying…")]
-    private static partial void LogRetryAttempt(ILogger l, int attempt, string reason);
+    private static readonly Action<ILogger, int, string, Exception?> _logRetryAttempt =
+        LoggerMessage.Define<int, string>(
+            LogLevel.Warning,
+            new EventId(3503, nameof(LogRetryAttempt)),
+            "Printer connection attempt {Attempt} failed: {Reason}. Retrying\u2026");
+
+    private static void LogDispatching(ILogger logger, string idempotencyKey, string printerName, string host, int port, int copies) =>
+        _logDispatching(logger, idempotencyKey, printerName, host, port, copies, null);
+
+    private static void LogDispatched(ILogger logger, string idempotencyKey, string printerName) =>
+        _logDispatched(logger, idempotencyKey, printerName, null);
+
+    private static void LogRetryAttempt(ILogger logger, int attempt, string reason) =>
+        _logRetryAttempt(logger, attempt, reason, null);
 }
 

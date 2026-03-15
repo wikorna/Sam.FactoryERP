@@ -25,7 +25,7 @@ namespace Shipping.Infrastructure.Parsers;
 /// </list>
 /// </para>
 /// </remarks>
-public sealed partial class ShipmentCsvParser(ILogger<ShipmentCsvParser> logger) : IShipmentCsvParser
+public sealed class ShipmentCsvParser(ILogger<ShipmentCsvParser> logger) : IShipmentCsvParser
 {
     // ── Column ordinal constants ──────────────────────────────────────────
     private const int ColCustomerCode = 0;
@@ -269,11 +269,8 @@ public sealed partial class ShipmentCsvParser(ILogger<ShipmentCsvParser> logger)
 
     // ── LoggerMessage ─────────────────────────────────────────────────────
 
-    [LoggerMessage(Level = LogLevel.Debug, Message = "Shipment CSV header skipped: {HeaderLine}")]
-    private static partial void LogHeaderSkipped(ILogger logger, string headerLine);
+    private static void LogHeaderSkipped(ILogger logger, string headerLine) => logger.LogDebug("Shipment CSV header skipped: {HeaderLine}", headerLine);
 
-    [LoggerMessage(Level = LogLevel.Information,
-        Message = "Shipment CSV parse complete: {TotalRows} rows, {ValidCount} valid, {ErrorCount} errors")]
-    private static partial void LogParseComplete(ILogger logger, int totalRows, int validCount, int errorCount);
+    private static void LogParseComplete(ILogger logger, int totalRows, int validCount, int errorCount) => logger.LogInformation("Shipment CSV parse complete: {TotalRows} rows, {ValidCount} valid, {ErrorCount} errors", totalRows, validCount, errorCount);
 }
 

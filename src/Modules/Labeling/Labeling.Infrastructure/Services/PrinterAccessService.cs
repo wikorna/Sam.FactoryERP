@@ -6,17 +6,15 @@ using FactoryERP.Abstractions.Identity;
 
 namespace Labeling.Infrastructure.Services;
 
-public partial class PrinterAccessService : IPrinterAccessService
+public class PrinterAccessService : IPrinterAccessService
 {
     private readonly ILabelingDbContext _dbContext;
     private readonly ICurrentUserService _currentUser;
     private readonly ILogger<PrinterAccessService> _logger;
 
-    [LoggerMessage(Level = LogLevel.Warning, Message = "Access denied: Printer {PrinterId} not found or disabled")]
-    private partial void LogPrinterNotFoundOrDisabled(Guid printerId);
+    private void LogPrinterNotFoundOrDisabled(Guid printerId) => _logger.LogWarning("Access denied: Printer {PrinterId} not found or disabled", printerId);
 
-    [LoggerMessage(Level = LogLevel.Warning, Message = "Access denied to printer {PrinterId} for user {UserId} by override")]
-    private partial void LogUserOverrideDenied(Guid printerId, Guid userId);
+    private void LogUserOverrideDenied(Guid printerId, Guid userId) => _logger.LogWarning("Access denied to printer {PrinterId} for user {UserId} by override", printerId, userId);
 
     public PrinterAccessService(
         ILabelingDbContext dbContext,

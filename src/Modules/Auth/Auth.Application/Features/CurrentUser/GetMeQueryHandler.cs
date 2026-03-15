@@ -11,7 +11,7 @@ namespace Auth.Application.Features.CurrentUser;
 /// Loads the authenticated user's profile: display name, roles, and accessible ERP apps.
 /// Apps are resolved from the <c>RoleAppAccess</c> join table — only active apps are returned.
 /// </summary>
-public sealed partial class GetMeQueryHandler : IRequestHandler<GetMeQuery, MeResponse>
+public sealed class GetMeQueryHandler : IRequestHandler<GetMeQuery, MeResponse>
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IAuthDbContext _db;
@@ -70,12 +70,8 @@ public sealed partial class GetMeQueryHandler : IRequestHandler<GetMeQuery, MeRe
         };
     }
 
-    [LoggerMessage(Level = LogLevel.Warning,
-        Message = "GetMe: user not found or inactive (UserId={UserId})")]
-    private static partial void LogUserNotFound(ILogger logger, Guid userId);
+    private static void LogUserNotFound(ILogger logger, Guid userId) => logger.LogWarning("GetMe: user not found or inactive (UserId={UserId})", userId);
 
-    [LoggerMessage(Level = LogLevel.Debug,
-        Message = "GetMe resolved UserId={UserId}: {RoleCount} role(s), {AppCount} app(s)")]
-    private static partial void LogMeResolved(ILogger logger, Guid userId, int roleCount, int appCount);
+    private static void LogMeResolved(ILogger logger, Guid userId, int roleCount, int appCount) => logger.LogDebug("GetMe resolved UserId={UserId}: {RoleCount} role(s), {AppCount} app(s)", userId, roleCount, appCount);
 }
 

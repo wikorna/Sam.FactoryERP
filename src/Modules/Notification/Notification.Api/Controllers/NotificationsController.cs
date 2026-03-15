@@ -19,7 +19,7 @@ namespace Notification.Api.Controllers;
 [ApiController]
 [Route("api/notifications")]
 [Authorize]
-public sealed partial class NotificationsController : ControllerBase
+public sealed class NotificationsController : ControllerBase
 {
     private readonly IMediator             _mediator;
     private readonly ICurrentUserService   _currentUser;
@@ -103,8 +103,6 @@ public sealed partial class NotificationsController : ControllerBase
             : Problem(result.Error.Message, statusCode: StatusCodes.Status400BadRequest);
     }
 
-    [LoggerMessage(Level = LogLevel.Warning,
-        Message = "Notification {NotificationId} not found for user {UserId}")]
-    private partial void LogNotFound(Guid notificationId, string userId);
+    private void LogNotFound(Guid notificationId, string userId) => _logger.LogWarning("Notification {NotificationId} not found for user {UserId}", notificationId, userId);
 }
 

@@ -8,12 +8,18 @@ namespace FactoryERP.Abstractions.Behaviors;
 /// MediatR pipeline behavior that logs a warning when a request exceeds a configurable threshold.
 /// Default threshold: 500ms. Configure via appsettings: "Performance:ThresholdMs".
 /// </summary>
-public sealed partial class PerformanceBehavior<TRequest, TResponse>(
+public sealed class PerformanceBehavior<TRequest, TResponse>(
     ILogger<PerformanceBehavior<TRequest, TResponse>> logger)
     : IPipelineBehavior<TRequest, TResponse>
     where TRequest : notnull
 {
     private const long DefaultThresholdMs = 500;
+
+    private static readonly Action<ILogger, string, long, long, Exception?> LogSlow =
+        LoggerMessage.Define<string, long, long>(
+            LogLevel.Warning,
+            new EventId(3, nameof(LogSlow)),
+            "SLOW REQUEST: {RequestName} took {ElapsedMs}ms (threshold: {ThresholdMs}ms)");
 
     public async Task<TResponse> Handle(
         TRequest request,
@@ -26,13 +32,9 @@ public sealed partial class PerformanceBehavior<TRequest, TResponse>(
 
         if (sw.ElapsedMilliseconds > DefaultThresholdMs)
         {
-            LogSlow(logger, typeof(TRequest).Name, sw.ElapsedMilliseconds, DefaultThresholdMs);
+            LogSlow(logger, typeof(TRequest).Name, sw.ElapsedMilliseconds, DefaultThresholdMs, null);
         }
 
         return response;
     }
-
-    [LoggerMessage(Level = LogLevel.Warning,
-        Message = "SLOW REQUEST: {RequestName} took {ElapsedMs}ms (threshold: {ThresholdMs}ms)")]
-    private static partial void LogSlow(ILogger logger, string requestName, long elapsedMs, long thresholdMs);
 }

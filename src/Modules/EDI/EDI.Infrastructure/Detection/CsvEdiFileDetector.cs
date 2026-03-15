@@ -14,7 +14,7 @@ namespace EDI.Infrastructure.Detection;
 /// Supports both simple headers (with skip-lines) and segment-marker based headers (H1/S1/S2/S3).
 /// Reads only the first N lines — never loads the full file into memory.
 /// </summary>
-public sealed partial class CsvEdiFileDetector(
+public sealed class CsvEdiFileDetector(
     IEdiSchemaProvider              schemaProvider,
     ILogger<CsvEdiFileDetector>     logger)
     : IEdiFileDetector
@@ -344,44 +344,94 @@ public sealed partial class CsvEdiFileDetector(
 
     // ── LoggerMessage ─────────────────────────────────────────────────────────
 
-    [LoggerMessage(Level = LogLevel.Debug,
-        Message = "EDI detect: start — {FileName} ({SizeBytes} bytes) clientId={ClientId}")]
-    private static partial void LogDetecting(ILogger l, string fileName, long sizeBytes, string clientId);
+    private static readonly Action<ILogger, string, long, string, Exception?> _logDetecting =
+        LoggerMessage.Define<string, long, string>(
+            LogLevel.Debug,
+            new EventId(2010, nameof(LogDetecting)),
+            "EDI detect: start — {FileName} ({SizeBytes} bytes) clientId={ClientId}");
 
-    [LoggerMessage(Level = LogLevel.Warning,
-        Message = "EDI detect: file too large — {FileName} ({SizeBytes} bytes, max {MaxBytes})")]
-    private static partial void LogFileTooLarge(ILogger l, string fileName, long sizeBytes, long maxBytes);
+    private static readonly Action<ILogger, string, long, long, Exception?> _logFileTooLarge =
+        LoggerMessage.Define<string, long, long>(
+            LogLevel.Warning,
+            new EventId(2011, nameof(LogFileTooLarge)),
+            "EDI detect: file too large — {FileName} ({SizeBytes} bytes, max {MaxBytes})");
 
-    [LoggerMessage(Level = LogLevel.Warning,
-        Message = "EDI detect: invalid filename prefix — {FileName}")]
-    private static partial void LogInvalidFilename(ILogger l, string fileName);
+    private static readonly Action<ILogger, string, Exception?> _logInvalidFilename =
+        LoggerMessage.Define<string>(
+            LogLevel.Warning,
+            new EventId(2012, nameof(LogInvalidFilename)),
+            "EDI detect: invalid filename prefix — {FileName}");
 
-    [LoggerMessage(Level = LogLevel.Warning,
-        Message = "EDI detect: no schema for {FileName} (type={FileType})")]
-    private static partial void LogNoSchema(ILogger l, string fileName, string fileType);
+    private static readonly Action<ILogger, string, string, Exception?> _logNoSchema =
+        LoggerMessage.Define<string, string>(
+            LogLevel.Warning,
+            new EventId(2013, nameof(LogNoSchema)),
+            "EDI detect: no schema for {FileName} (type={FileType})");
 
-    [LoggerMessage(Level = LogLevel.Warning,
-        Message = "EDI detect: encoding error — {FileName}: {Detail}")]
-    private static partial void LogEncodingError(ILogger l, string fileName, string detail);
+    private static readonly Action<ILogger, string, string, Exception?> _logEncodingError =
+        LoggerMessage.Define<string, string>(
+            LogLevel.Warning,
+            new EventId(2014, nameof(LogEncodingError)),
+            "EDI detect: encoding error — {FileName}: {Detail}");
 
-    [LoggerMessage(Level = LogLevel.Warning,
-        Message = "EDI detect: CSV parse error — {FileName}: {Detail}")]
-    private static partial void LogCsvParseError(ILogger l, string fileName, string detail);
+    private static readonly Action<ILogger, string, string, Exception?> _logCsvParseError =
+        LoggerMessage.Define<string, string>(
+            LogLevel.Warning,
+            new EventId(2015, nameof(LogCsvParseError)),
+            "EDI detect: CSV parse error — {FileName}: {Detail}");
 
-    [LoggerMessage(Level = LogLevel.Warning,
-        Message = "EDI detect: header mismatch — {FileName}, missing={MissingColumns}")]
-    private static partial void LogHeaderMismatch(ILogger l, string fileName, string missingColumns);
+    private static readonly Action<ILogger, string, string, Exception?> _logHeaderMismatch =
+        LoggerMessage.Define<string, string>(
+            LogLevel.Warning,
+            new EventId(2016, nameof(LogHeaderMismatch)),
+            "EDI detect: header mismatch — {FileName}, missing={MissingColumns}");
 
-    [LoggerMessage(Level = LogLevel.Information,
-        Message = "EDI detect: success — {FileName} → {FileType} (schemaKey={SchemaKey})")]
-    private static partial void LogDetected(ILogger l, string fileName, string fileType, string schemaKey);
+    private static readonly Action<ILogger, string, string, string, Exception?> _logDetected =
+        LoggerMessage.Define<string, string, string>(
+            LogLevel.Information,
+            new EventId(2017, nameof(LogDetected)),
+            "EDI detect: success — {FileName} → {FileType} (schemaKey={SchemaKey})");
 
-    [LoggerMessage(Level = LogLevel.Debug,
-        Message = "EDI detect: completed in {ElapsedMs}ms for {FileName}")]
-    private static partial void LogDetectionDuration(ILogger l, string fileName, long elapsedMs);
+    private static readonly Action<ILogger, string, long, Exception?> _logDetectionDuration =
+        LoggerMessage.Define<string, long>(
+            LogLevel.Debug,
+            new EventId(2018, nameof(LogDetectionDuration)),
+            "EDI detect: {FileName} — completed in {ElapsedMs}ms");
 
-    [LoggerMessage(Level = LogLevel.Warning,
-        Message = "EDI detect: duplicate columns in header — {FileName}, columns={DuplicateColumns}")]
-    private static partial void LogDuplicateColumns(ILogger l, string fileName, string duplicateColumns);
+    private static readonly Action<ILogger, string, string, Exception?> _logDuplicateColumns =
+        LoggerMessage.Define<string, string>(
+            LogLevel.Warning,
+            new EventId(2019, nameof(LogDuplicateColumns)),
+            "EDI detect: duplicate columns in header — {FileName}, columns={DuplicateColumns}");
+
+    private static void LogDetecting(ILogger logger, string fileName, long sizeBytes, string clientId) =>
+        _logDetecting(logger, fileName, sizeBytes, clientId, null);
+
+    private static void LogFileTooLarge(ILogger logger, string fileName, long sizeBytes, long maxBytes) =>
+        _logFileTooLarge(logger, fileName, sizeBytes, maxBytes, null);
+
+    private static void LogInvalidFilename(ILogger logger, string fileName) =>
+        _logInvalidFilename(logger, fileName, null);
+
+    private static void LogNoSchema(ILogger logger, string fileName, string fileType) =>
+        _logNoSchema(logger, fileName, fileType, null);
+
+    private static void LogEncodingError(ILogger logger, string fileName, string detail) =>
+        _logEncodingError(logger, fileName, detail, null);
+
+    private static void LogCsvParseError(ILogger logger, string fileName, string detail) =>
+        _logCsvParseError(logger, fileName, detail, null);
+
+    private static void LogHeaderMismatch(ILogger logger, string fileName, string missingColumns) =>
+        _logHeaderMismatch(logger, fileName, missingColumns, null);
+
+    private static void LogDetected(ILogger logger, string fileName, string fileType, string schemaKey) =>
+        _logDetected(logger, fileName, fileType, schemaKey, null);
+
+    private static void LogDetectionDuration(ILogger logger, string fileName, long elapsedMs) =>
+        _logDetectionDuration(logger, fileName, elapsedMs, null);
+
+    private static void LogDuplicateColumns(ILogger logger, string fileName, string duplicateColumns) =>
+        _logDuplicateColumns(logger, fileName, duplicateColumns, null);
 }
 

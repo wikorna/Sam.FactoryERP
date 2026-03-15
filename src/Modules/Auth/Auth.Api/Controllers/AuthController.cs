@@ -21,7 +21,7 @@ namespace Auth.Api.Controllers;
 [ApiController]
 [Route("api/auth")]
 [EnableRateLimiting("AuthLoginPolicy")]
-public sealed partial class AuthController : ControllerBase
+public sealed class AuthController : ControllerBase
 {
     private readonly IMediator _mediator;
     private readonly ILogger<AuthController> _logger;
@@ -140,8 +140,7 @@ public sealed partial class AuthController : ControllerBase
         });
     }
 
-    [LoggerMessage(Level = LogLevel.Warning, Message = "Login rejected for username '{Username}'")]
-    private static partial void LogLoginRejected(ILogger logger, string username);
+    private static void LogLoginRejected(ILogger logger, string username) => logger.LogWarning("Login rejected for username '{Username}'", username);
 }
 
 /// <summary>Login request body.</summary>

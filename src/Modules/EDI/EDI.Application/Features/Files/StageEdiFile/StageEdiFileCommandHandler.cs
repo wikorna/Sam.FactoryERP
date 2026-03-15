@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 
 namespace EDI.Application.Features.Files.StageEdiFile;
 
-public sealed partial class StageEdiFileCommandHandler(
+public sealed class StageEdiFileCommandHandler(
     IEdiFileDetector fileDetector,
     IEdiStorageService storageService,
     IEdiStagingFileRepository repository,
@@ -16,8 +16,7 @@ public sealed partial class StageEdiFileCommandHandler(
     ILogger<StageEdiFileCommandHandler> logger)
     : IRequestHandler<StageEdiFileCommand, StageEdiFileResult>
 {
-    [LoggerMessage(Level = LogLevel.Information, Message = "Staging EDI file: {FileName} ({SizeBytes} bytes)")]
-    private static partial void LogStaging(ILogger logger, string fileName, long sizeBytes);
+    private static void LogStaging(ILogger logger, string fileName, long sizeBytes) => logger.LogInformation("Staging EDI file: {FileName} ({SizeBytes} bytes)", fileName, sizeBytes);
 
     public async Task<StageEdiFileResult> Handle(StageEdiFileCommand request, CancellationToken cancellationToken)
     {

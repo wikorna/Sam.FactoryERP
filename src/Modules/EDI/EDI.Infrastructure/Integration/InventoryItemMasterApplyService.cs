@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 
 namespace EDI.Infrastructure.Integration;
 
-public sealed partial class InventoryItemMasterApplyService : IItemMasterApplyService
+public sealed class InventoryItemMasterApplyService : IItemMasterApplyService
 {
     private readonly ILogger<InventoryItemMasterApplyService> _logger;
 
@@ -21,6 +21,5 @@ public sealed partial class InventoryItemMasterApplyService : IItemMasterApplySe
         return Task.FromResult(rows.Count);
     }
 
-    [LoggerMessage(Level = LogLevel.Information, Message = "Applying {Count} item master rows from EDI Job {JobId} to Inventory (STUB).")]
-    private partial void LogApplyingItemMaster(int count, Guid jobId);
+    private void LogApplyingItemMaster(int count, Guid jobId) => _logger.LogInformation("Applying {Count} item master rows from EDI Job {JobId} to Inventory (STUB).", count, jobId);
 }

@@ -12,7 +12,7 @@ namespace Auth.Application.Features.ChangePassword;
 /// Verifies the current password, hashes the new one, and revokes all
 /// existing refresh tokens for security (force re-login on all devices).
 /// </summary>
-public sealed partial class ChangePasswordCommandHandler : IRequestHandler<ChangePasswordCommand, ChangePasswordResult>
+public sealed class ChangePasswordCommandHandler : IRequestHandler<ChangePasswordCommand, ChangePasswordResult>
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IAuthDbContext _db;
@@ -64,11 +64,7 @@ public sealed partial class ChangePasswordCommandHandler : IRequestHandler<Chang
         return new ChangePasswordResult(true);
     }
 
-    [LoggerMessage(Level = LogLevel.Warning,
-        Message = "Password change failed for UserId={UserId}: {Reason}")]
-    private static partial void LogPasswordChangeFailed(ILogger logger, Guid userId, string reason);
+    private static void LogPasswordChangeFailed(ILogger logger, Guid userId, string reason) => logger.LogWarning("Password change failed for UserId={UserId}: {Reason}", userId, reason);
 
-    [LoggerMessage(Level = LogLevel.Information,
-        Message = "Password changed for UserId={UserId}, {RevokedCount} refresh tokens revoked")]
-    private static partial void LogPasswordChanged(ILogger logger, Guid userId, int revokedCount);
+    private static void LogPasswordChanged(ILogger logger, Guid userId, int revokedCount) => logger.LogInformation("Password changed for UserId={UserId}, {RevokedCount} refresh tokens revoked", userId, revokedCount);
 }

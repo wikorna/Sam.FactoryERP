@@ -12,7 +12,7 @@ using Polly;
 
 namespace FactoryERP.Infrastructure.Email.Sending;
 
-public sealed partial class MailKitSmtpEmailSender(
+public sealed class MailKitSmtpEmailSender(
     IOptions<EmailOptions> options,
     ILogger<MailKitSmtpEmailSender> logger) : IEmailSender//, IEmailSenderV2
 {
@@ -377,34 +377,18 @@ public sealed partial class MailKitSmtpEmailSender(
         return false; // conservative default
     }
 
-    private static partial class LocalLog
+    private static class LocalLog
     {
-        [LoggerMessage(LogLevel.Debug, "Email sending is disabled (Email:Enabled=false). Skipping send.")]
-        public static partial void SmtpDisabled(ILogger logger);
+        public static void SmtpDisabled(ILogger logger) => logger.LogDebug("Email sending is disabled (Email:Enabled=false). Skipping send.");
 
-        [LoggerMessage(LogLevel.Warning,
-            "SMTP certificate validation is bypassed (AllowInvalidCertificate=true). Do NOT use in production.")]
-        public static partial void SmtpCertificateValidationBypassed(ILogger logger);
+        public static void SmtpCertificateValidationBypassed(ILogger logger) => logger.LogWarning("SMTP certificate validation is bypassed (AllowInvalidCertificate=true). Do NOT use in production.");
 
-        [LoggerMessage(LogLevel.Information, "SMTP email sent to {To}. ProviderMessageId={ProviderMessageId}")]
-        public static partial void SmtpSendMailTo(ILogger logger, string to, string? providerMessageId);
+        public static void SmtpSendMailTo(ILogger logger, string to, string? providerMessageId) => logger.LogInformation("SMTP email sent to {To}. ProviderMessageId={ProviderMessageId}", to, providerMessageId);
 
-        [LoggerMessage(LogLevel.Warning, "SMTP send canceled for {To}")]
-        public static partial void SmtpSendCanceled(ILogger logger, string to);
+        public static void SmtpSendCanceled(ILogger logger, string to) => logger.LogWarning("SMTP send canceled for {To}", to);
 
-        [LoggerMessage(LogLevel.Error, "SMTP send failed for {To}")]
-        public static partial void SmtpSendFailed(ILogger logger, string to, Exception ex);
+        public static void SmtpSendFailed(ILogger logger, string to, Exception ex) => logger.LogError(ex, "SMTP send failed for {To}", to);
 
-        [LoggerMessage(
-            EventId = 1001,
-            Level = LogLevel.Warning,
-            Message = "SMTP retry {RetryCount} after {DelayMs}ms due to {ErrorMessage}"
-        )]
-        public static partial void SmtpRetry(
-            ILogger logger,
-            int retryCount,
-            double delayMs,
-            string errorMessage,
-            Exception exception);
+        public static void SmtpRetry(ILogger logger, int retryCount, double delayMs, string errorMessage, Exception exception) => logger.LogWarning(exception, "SMTP retry {RetryCount} after {DelayMs}ms due to {ErrorMessage}", retryCount, delayMs, errorMessage);
     }
 }

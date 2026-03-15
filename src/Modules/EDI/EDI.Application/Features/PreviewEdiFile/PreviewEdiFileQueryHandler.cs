@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace EDI.Application.Features.PreviewEdiFile;
 
-public sealed partial class PreviewEdiFileQueryHandler(
+public sealed class PreviewEdiFileQueryHandler(
     IEdiFileJobRepository jobs,
     IEdiFileTypeConfigRepository configRepo,
     IStagingRepository staging,
@@ -62,7 +62,6 @@ public sealed partial class PreviewEdiFileQueryHandler(
             totalCount);
     }
 
-    [LoggerMessage(Level = LogLevel.Information, Message = "EDI preview: JobId={JobId}, PreviewRows={PreviewCount}, TotalRows={TotalCount}")]
-    private static partial void LogPreview(ILogger logger, Guid jobId, int previewCount, int totalCount);
+    private static void LogPreview(ILogger logger, Guid jobId, int previewCount, int totalCount) => logger.LogInformation("EDI preview: JobId={JobId}, PreviewRows={PreviewCount}, TotalRows={TotalCount}", jobId, previewCount, totalCount);
 }
 

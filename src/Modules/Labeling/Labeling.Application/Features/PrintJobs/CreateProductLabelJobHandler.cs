@@ -9,7 +9,7 @@ using FactoryERP.Abstractions.Identity;
 
 namespace Labeling.Application.Features.PrintJobs;
 
-public partial class CreateProductLabelJobHandler : IRequestHandler<CreateProductLabelJobCommand, CreatePrintJobResult>
+public class CreateProductLabelJobHandler : IRequestHandler<CreateProductLabelJobCommand, CreatePrintJobResult>
 {
     private readonly ILabelingDbContext _dbContext;
     private readonly IPrinterAccessService _printerAccessService;
@@ -18,23 +18,17 @@ public partial class CreateProductLabelJobHandler : IRequestHandler<CreateProduc
     private readonly IPublishEndpoint _publishEndpoint;
     private readonly ILogger<CreateProductLabelJobHandler> _logger;
 
-    [LoggerMessage(Level = LogLevel.Information, Message = "Idempotency hit for key {IdempotencyKey}. Returning existing Job {JobId}")]
-    private partial void LogIdempotencyHit(string idempotencyKey, Guid jobId);
+    private void LogIdempotencyHit(string idempotencyKey, Guid jobId) => _logger.LogInformation("Idempotency hit for key {IdempotencyKey}. Returning existing Job {JobId}", idempotencyKey, jobId);
 
-    [LoggerMessage(Level = LogLevel.Warning, Message = "Printer {PrinterId} not found")]
-    private partial void LogPrinterNotFound(Guid printerId);
+    private void LogPrinterNotFound(Guid printerId) => _logger.LogWarning("Printer {PrinterId} not found", printerId);
 
-    [LoggerMessage(Level = LogLevel.Warning, Message = "Printer {PrinterId} is disabled")]
-    private partial void LogPrinterDisabled(Guid printerId);
+    private void LogPrinterDisabled(Guid printerId) => _logger.LogWarning("Printer {PrinterId} is disabled", printerId);
 
-    [LoggerMessage(Level = LogLevel.Warning, Message = "User {UserId} denied access to printer {PrinterId}")]
-    private partial void LogAccessDenied(Guid userId, Guid printerId);
+    private void LogAccessDenied(Guid userId, Guid printerId) => _logger.LogWarning("User {UserId} denied access to printer {PrinterId}", userId, printerId);
 
-    [LoggerMessage(Level = LogLevel.Error, Message = "Failed to render ZPL for Product Label")]
-    private partial void LogRenderError(Exception ex);
+    private void LogRenderError(Exception ex) => _logger.LogError(ex, "Failed to render ZPL for Product Label");
 
-    [LoggerMessage(Level = LogLevel.Information, Message = "Print Job {JobId} created and queued for printer {PrinterName}")]
-    private partial void LogJobCreated(Guid jobId, string printerName);
+    private void LogJobCreated(Guid jobId, string printerName) => _logger.LogInformation("Print Job {JobId} created and queued for printer {PrinterName}", jobId, printerName);
 
     public CreateProductLabelJobHandler(
         ILabelingDbContext dbContext,

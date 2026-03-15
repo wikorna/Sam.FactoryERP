@@ -9,7 +9,7 @@ namespace EDI.Application.Features.DetectEdiFile;
 /// Keeps the handler thin: validation is handled by <see cref="DetectEdiFileCommandValidator"/>
 /// via the pipeline; detection logic lives in Infrastructure.
 /// </summary>
-public sealed partial class DetectEdiFileCommandHandler(
+public sealed class DetectEdiFileCommandHandler(
     IEdiFileDetector                     fileDetector,
     ILogger<DetectEdiFileCommandHandler> logger)
     : IRequestHandler<DetectEdiFileCommand, DetectEdiFileResult>
@@ -38,15 +38,30 @@ public sealed partial class DetectEdiFileCommandHandler(
         return result;
     }
 
-    [LoggerMessage(Level = LogLevel.Debug,
-        Message = "EDI detect: handling {FileName} ({SizeBytes} bytes)")]
-    private static partial void LogHandling(ILogger l, string fileName, long sizeBytes);
+    private static readonly Action<ILogger, string, long, Exception?> _logHandling =
+        LoggerMessage.Define<string, long>(
+            LogLevel.Debug,
+            new EventId(2001, nameof(LogHandling)),
+            "EDI detect: handling {FileName} ({SizeBytes} bytes)");
 
-    [LoggerMessage(Level = LogLevel.Information,
-        Message = "EDI detect: success — {FileName} → {FileType} (schema={SchemaKey})")]
-    private static partial void LogDetected(ILogger l, string fileName, string fileType, string schemaKey);
+    private static readonly Action<ILogger, string, string, string, Exception?> _logDetected =
+        LoggerMessage.Define<string, string, string>(
+            LogLevel.Information,
+            new EventId(2002, nameof(LogDetected)),
+            "EDI detect: success — {FileName} → {FileType} (schema={SchemaKey})");
 
-    [LoggerMessage(Level = LogLevel.Warning,
-        Message = "EDI detect: not detected — {FileName}, errors={ErrorCount}")]
-    private static partial void LogNotDetected(ILogger l, string fileName, int errorCount);
+    private static readonly Action<ILogger, string, int, Exception?> _logNotDetected =
+        LoggerMessage.Define<string, int>(
+            LogLevel.Warning,
+            new EventId(2003, nameof(LogNotDetected)),
+            "EDI detect: not detected — {FileName}, errors={ErrorCount}");
+
+    private static void LogHandling(ILogger logger, string fileName, long sizeBytes) =>
+        _logHandling(logger, fileName, sizeBytes, null);
+
+    private static void LogDetected(ILogger logger, string fileName, string fileType, string schemaKey) =>
+        _logDetected(logger, fileName, fileType, schemaKey, null);
+
+    private static void LogNotDetected(ILogger logger, string fileName, int errorCount) =>
+        _logNotDetected(logger, fileName, errorCount, null);
 }

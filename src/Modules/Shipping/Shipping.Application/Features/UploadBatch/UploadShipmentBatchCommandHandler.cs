@@ -9,7 +9,7 @@ namespace Shipping.Application.Features.UploadBatch;
 /// <summary>
 /// Handles CSV upload: parse → validate → create Draft ShipmentBatch → persist.
 /// </summary>
-public sealed partial class UploadShipmentBatchCommandHandler(
+public sealed class UploadShipmentBatchCommandHandler(
     IShipmentCsvParser csvParser,
     IBatchNumberGenerator batchNumberGenerator,
     IShipmentBatchRepository repository,
@@ -120,16 +120,10 @@ public sealed partial class UploadShipmentBatchCommandHandler(
 
     // ── LoggerMessage ─────────────────────────────────────────────────────
 
-    [LoggerMessage(Level = LogLevel.Information,
-        Message = "Shipment batch CSV upload started: {FileName} ({SizeBytes} bytes)")]
-    private static partial void LogUploadStarted(ILogger logger, string fileName, long sizeBytes);
+    private static void LogUploadStarted(ILogger logger, string fileName, long sizeBytes) => logger.LogInformation("Shipment batch CSV upload started: {FileName} ({SizeBytes} bytes)", fileName, sizeBytes);
 
-    [LoggerMessage(Level = LogLevel.Information,
-        Message = "CSV parsed: {FileName} → {TotalRows} rows, {ValidCount} valid, {ErrorCount} errors")]
-    private static partial void LogParsed(ILogger logger, string fileName, int totalRows, int validCount, int errorCount);
+    private static void LogParsed(ILogger logger, string fileName, int totalRows, int validCount, int errorCount) => logger.LogInformation("CSV parsed: {FileName} → {TotalRows} rows, {ValidCount} valid, {ErrorCount} errors", fileName, totalRows, validCount, errorCount);
 
-    [LoggerMessage(Level = LogLevel.Information,
-        Message = "Shipment batch created: {BatchNumber} (Id={BatchId}), {ItemCount} items, {ErrorCount} row errors")]
-    private static partial void LogBatchCreated(ILogger logger, string batchNumber, Guid batchId, int itemCount, int errorCount);
+    private static void LogBatchCreated(ILogger logger, string batchNumber, Guid batchId, int itemCount, int errorCount) => logger.LogInformation("Shipment batch created: {BatchNumber} (Id={BatchId}), {ItemCount} items, {ErrorCount} row errors", batchNumber, batchId, itemCount, errorCount);
 }
 

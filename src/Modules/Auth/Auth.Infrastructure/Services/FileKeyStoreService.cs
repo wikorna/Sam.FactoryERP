@@ -16,7 +16,7 @@ namespace Auth.Infrastructure.Services;
 /// If no keys exist on first run, a new 2048-bit RSA key is generated.
 /// </para>
 /// </summary>
-internal sealed partial class FileKeyStoreService : IKeyStoreService
+internal sealed class FileKeyStoreService : IKeyStoreService
 {
     private readonly JwtOptions _options;
     private readonly ILogger<FileKeyStoreService> _logger;
@@ -90,11 +90,7 @@ internal sealed partial class FileKeyStoreService : IKeyStoreService
         return Task.FromResult<IReadOnlyList<(RsaSecurityKey, string)>>(keys);
     }
 
-    [LoggerMessage(Level = LogLevel.Warning,
-        Message = "No RSA key found. Generated new key Kid={Kid} at {FilePath}")]
-    private static partial void LogKeyGenerated(ILogger logger, string kid, string filePath);
+    private static void LogKeyGenerated(ILogger logger, string kid, string filePath) => logger.LogWarning("No RSA key found. Generated new key Kid={Kid} at {FilePath}", kid, filePath);
 
-    [LoggerMessage(Level = LogLevel.Information,
-        Message = "Loaded active signing key Kid={Kid}")]
-    private static partial void LogKeyLoaded(ILogger logger, string kid);
+    private static void LogKeyLoaded(ILogger logger, string kid) => logger.LogInformation("Loaded active signing key Kid={Kid}", kid);
 }

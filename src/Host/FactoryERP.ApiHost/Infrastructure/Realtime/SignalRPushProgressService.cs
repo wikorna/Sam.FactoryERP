@@ -13,7 +13,7 @@ namespace FactoryERP.ApiHost.Infrastructure.Realtime;
 /// Registered as <b>Scoped</b> in ApiHost DI.
 /// WorkerHost uses <see cref="FactoryERP.Infrastructure.Realtime.NullPushProgressService"/> instead.
 /// </remarks>
-public sealed partial class SignalRPushProgressService : IPushProgressService
+public sealed class SignalRPushProgressService : IPushProgressService
 {
     private readonly IHubContext<ProgressHub, IProgressClient> _hubContext;
     private readonly ILogger<SignalRPushProgressService> _logger;
@@ -73,16 +73,10 @@ public sealed partial class SignalRPushProgressService : IPushProgressService
 
     // ── Analyzer-compliant log helpers ───────────────────────────────────────
 
-    [LoggerMessage(Level = LogLevel.Debug,
-        Message = "Pushed progress for job {JobId}: {Percent}%")]
-    private partial void LogProgress(string jobId, int percent);
+    private void LogProgress(string jobId, int percent) => _logger.LogDebug("Pushed progress for job {JobId}: {Percent}%", jobId, percent);
 
-    [LoggerMessage(Level = LogLevel.Information,
-        Message = "Pushed job completed for {JobId}, resultId={ResultId}")]
-    private partial void LogCompleted(string jobId, string resultId);
+    private void LogCompleted(string jobId, string resultId) => _logger.LogInformation("Pushed job completed for {JobId}, resultId={ResultId}", jobId, resultId);
 
-    [LoggerMessage(Level = LogLevel.Warning,
-        Message = "Pushed job failed for {JobId}: {ErrorMessage}")]
-    private partial void LogFailed(string jobId, string errorMessage);
+    private void LogFailed(string jobId, string errorMessage) => _logger.LogWarning("Pushed job failed for {JobId}: {ErrorMessage}", jobId, errorMessage);
 }
 

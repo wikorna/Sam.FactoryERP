@@ -13,7 +13,7 @@ namespace Notification.Infrastructure.Consumers;
 /// This consumer runs in <b>ApiHost only</b> — it gets the real
 /// <c>NotificationDispatcher</c> backed by <c>IHubContext</c>.
 /// </summary>
-public sealed partial class NotificationSignalRPushConsumer
+public sealed class NotificationSignalRPushConsumer
     : IConsumer<NotificationCreatedIntegrationEvent>
 {
     private readonly INotificationDispatcher _dispatcher;
@@ -77,16 +77,10 @@ public sealed partial class NotificationSignalRPushConsumer
         _         => "info",
     };
 
-    [LoggerMessage(Level = LogLevel.Information,
-        Message = "Pushing notification to user {UserId}: category={Category}, severity={Severity}")]
-    private partial void LogPushing(string userId, string category, string severity);
+    private void LogPushing(string userId, string category, string severity) => _logger.LogInformation("Pushing notification to user {UserId}: category={Category}, severity={Severity}", userId, category, severity);
 
-    [LoggerMessage(Level = LogLevel.Information,
-        Message = "SignalR push dispatched to user {UserId}")]
-    private partial void LogPushed(string userId);
+    private void LogPushed(string userId) => _logger.LogInformation("SignalR push dispatched to user {UserId}", userId);
 
-    [LoggerMessage(Level = LogLevel.Debug,
-        Message = "NotificationCreatedIntegrationEvent {UserNotificationId} has no TargetUserId — skipping push")]
-    private partial void LogNoTarget(Guid userNotificationId);
+    private void LogNoTarget(Guid userNotificationId) => _logger.LogDebug("NotificationCreatedIntegrationEvent {UserNotificationId} has no TargetUserId — skipping push", userNotificationId);
 }
 

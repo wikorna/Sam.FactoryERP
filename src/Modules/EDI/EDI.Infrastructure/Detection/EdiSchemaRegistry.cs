@@ -13,7 +13,7 @@ namespace EDI.Infrastructure.Detection;
 /// Registry uses <see cref="StringComparer.OrdinalIgnoreCase"/> for all lookups.
 /// Schemas are immutable after construction — zero allocation on hot path.
 /// </summary>
-public sealed partial class EdiSchemaRegistry : IEdiSchemaRegistry
+public sealed class EdiSchemaRegistry : IEdiSchemaRegistry
 {
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
@@ -98,32 +98,67 @@ public sealed partial class EdiSchemaRegistry : IEdiSchemaRegistry
 
     // ── LoggerMessage ─────────────────────────────────────────────────────────
 
-    [LoggerMessage(Level = LogLevel.Warning,
-        Message = "EDI schema directory not found: {Path}")]
-    private static partial void LogSchemaDirectoryMissing(ILogger l, string path);
+    private static readonly Action<ILogger, string, Exception?> _logSchemaDirectoryMissing =
+        LoggerMessage.Define<string>(
+            LogLevel.Warning,
+            new EventId(2100, nameof(LogSchemaDirectoryMissing)),
+            "EDI schema directory not found: {Path}");
 
-    [LoggerMessage(Level = LogLevel.Warning,
-        Message = "EDI schema file is empty or invalid JSON: {Path}")]
-    private static partial void LogSchemaEmpty(ILogger l, string path);
+    private static readonly Action<ILogger, string, Exception?> _logSchemaEmpty =
+        LoggerMessage.Define<string>(
+            LogLevel.Warning,
+            new EventId(2101, nameof(LogSchemaEmpty)),
+            "EDI schema file is empty or invalid JSON: {Path}");
 
-    [LoggerMessage(Level = LogLevel.Warning,
-        Message = "EDI schema validation warning for '{SchemaKey}': {Issue}")]
-    private static partial void LogSchemaValidationWarning(ILogger l, string schemaKey, string issue);
+    private static readonly Action<ILogger, string, string, Exception?> _logSchemaValidationWarning =
+        LoggerMessage.Define<string, string>(
+            LogLevel.Warning,
+            new EventId(2102, nameof(LogSchemaValidationWarning)),
+            "EDI schema validation warning for '{SchemaKey}': {Issue}");
 
-    [LoggerMessage(Level = LogLevel.Warning,
-        Message = "EDI schema file '{Path}' has unrecognized file type key: '{SchemaKey}'")]
-    private static partial void LogSchemaUnknownFileType(ILogger l, string path, string schemaKey);
+    private static readonly Action<ILogger, string, string, Exception?> _logSchemaUnknownFileType =
+        LoggerMessage.Define<string, string>(
+            LogLevel.Warning,
+            new EventId(2103, nameof(LogSchemaUnknownFileType)),
+            "EDI schema file '{Path}' has unrecognized file type key: '{SchemaKey}'");
 
-    [LoggerMessage(Level = LogLevel.Information,
-        Message = "EDI schema loaded: {SchemaKey} v{SchemaVersion}")]
-    private static partial void LogSchemaLoaded(ILogger l, string schemaKey, string schemaVersion);
+    private static readonly Action<ILogger, string, string, Exception?> _logSchemaLoaded =
+        LoggerMessage.Define<string, string>(
+            LogLevel.Information,
+            new EventId(2104, nameof(LogSchemaLoaded)),
+            "EDI schema loaded: {SchemaKey} v{SchemaVersion}");
 
-    [LoggerMessage(Level = LogLevel.Error,
-        Message = "EDI schema load error: {Path} — {Detail}")]
-    private static partial void LogSchemaLoadError(ILogger l, string path, string detail);
+    private static readonly Action<ILogger, string, string, Exception?> _logSchemaLoadError =
+        LoggerMessage.Define<string, string>(
+            LogLevel.Error,
+            new EventId(2105, nameof(LogSchemaLoadError)),
+            "EDI schema load error: {Path} — {Detail}");
 
-    [LoggerMessage(Level = LogLevel.Information,
-        Message = "EDI Schema Registry ready: {Count} schemas loaded. Keys: {Keys}")]
-    private static partial void LogRegistryReady(ILogger l, int count, string keys);
+    private static readonly Action<ILogger, int, string, Exception?> _logRegistryReady =
+        LoggerMessage.Define<int, string>(
+            LogLevel.Information,
+            new EventId(2106, nameof(LogRegistryReady)),
+            "EDI Schema Registry ready: {Count} schemas loaded. Keys: {Keys}");
+
+    private static void LogSchemaDirectoryMissing(ILogger logger, string path) =>
+        _logSchemaDirectoryMissing(logger, path, null);
+
+    private static void LogSchemaEmpty(ILogger logger, string path) =>
+        _logSchemaEmpty(logger, path, null);
+
+    private static void LogSchemaValidationWarning(ILogger logger, string schemaKey, string issue) =>
+        _logSchemaValidationWarning(logger, schemaKey, issue, null);
+
+    private static void LogSchemaUnknownFileType(ILogger logger, string path, string schemaKey) =>
+        _logSchemaUnknownFileType(logger, path, schemaKey, null);
+
+    private static void LogSchemaLoaded(ILogger logger, string schemaKey, string schemaVersion) =>
+        _logSchemaLoaded(logger, schemaKey, schemaVersion, null);
+
+    private static void LogSchemaLoadError(ILogger logger, string path, string detail) =>
+        _logSchemaLoadError(logger, path, detail, null);
+
+    private static void LogRegistryReady(ILogger logger, int count, string keys) =>
+        _logRegistryReady(logger, count, keys, null);
 }
 

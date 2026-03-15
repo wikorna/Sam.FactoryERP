@@ -13,7 +13,7 @@ namespace FactoryERP.ApiHost.Infrastructure.Realtime;
 /// Registered as <b>Scoped</b> in ApiHost's DI container so it shares the
 /// lifetime of the HTTP request (or message-consumer scope).
 /// </remarks>
-public sealed partial class NotificationDispatcher : INotificationDispatcher
+public sealed class NotificationDispatcher : INotificationDispatcher
 {
     private readonly IHubContext<NotificationHub, INotificationClient> _hub;
     private readonly ILogger<NotificationDispatcher> _logger;
@@ -64,20 +64,12 @@ public sealed partial class NotificationDispatcher : INotificationDispatcher
 
     // ── Analyzer-compliant log helpers ───────────────────────────────────────
 
-    [LoggerMessage(Level = LogLevel.Information,
-        Message = "Pushed {EventType} notification to user {UserId}")]
-    private partial void LogNotifyUser(string userId, string eventType);
+    private void LogNotifyUser(string userId, string eventType) => _logger.LogInformation("Pushed {EventType} notification to user {UserId}", userId, eventType);
 
-    [LoggerMessage(Level = LogLevel.Information,
-        Message = "Pushed {EventType} notification to role group {Role}")]
-    private partial void LogNotifyRole(string role, string eventType);
+    private void LogNotifyRole(string role, string eventType) => _logger.LogInformation("Pushed {EventType} notification to role group {Role}", role, eventType);
 
-    [LoggerMessage(Level = LogLevel.Information,
-        Message = "Broadcast {EventType} notification to all clients")]
-    private partial void LogBroadcast(string eventType);
+    private void LogBroadcast(string eventType) => _logger.LogInformation("Broadcast {EventType} notification to all clients", eventType);
 
-    [LoggerMessage(Level = LogLevel.Debug,
-        Message = "Sent [{ToastLevel}] toast to user {UserId}")]
-    private partial void LogToast(string userId, string toastLevel);
+    private void LogToast(string userId, string toastLevel) => _logger.LogDebug("Sent [{ToastLevel}] toast to user {UserId}", userId, toastLevel);
 }
 

@@ -12,7 +12,7 @@ namespace EDI.Infrastructure;
 /// Detects file type by matching filename against prefix patterns stored in DB.
 /// Configs are cached via <see cref="ICacheService"/> for performance.
 /// </summary>
-public sealed partial class FileTypeDetector(
+public sealed class FileTypeDetector(
     IEdiFileTypeConfigRepository configRepo,
     ICacheService cache,
     ILogger<FileTypeDetector> logger) : IFileTypeDetector
@@ -78,17 +78,12 @@ public sealed partial class FileTypeDetector(
             ct);
     }
 
-    [LoggerMessage(Level = LogLevel.Information, Message = "EDI file type detected: {FileName} → {FileTypeCode}")]
-    private static partial void LogDetected(ILogger logger, string fileName, string fileTypeCode);
+    private static void LogDetected(ILogger logger, string fileName, string fileTypeCode) => logger.LogInformation("EDI file type detected: {FileName} → {FileTypeCode}", fileName, fileTypeCode);
 
-    [LoggerMessage(Level = LogLevel.Information,
-        Message = "EDI file type detected with confidence: {FileName} → {FileTypeCode} (confidence={Confidence:F2})")]
-    private static partial void LogDetectedWithConfidence(ILogger logger, string fileName, string fileTypeCode, double confidence);
+    private static void LogDetectedWithConfidence(ILogger logger, string fileName, string fileTypeCode, double confidence) => logger.LogInformation("EDI file type detected with confidence: {FileName} → {FileTypeCode} (confidence={Confidence:F2})", fileName, fileTypeCode, confidence);
 
-    [LoggerMessage(Level = LogLevel.Warning, Message = "EDI file type regex timeout: {FileTypeCode}, Pattern={Pattern}")]
-    private static partial void LogRegexTimeout(ILogger logger, string fileTypeCode, string pattern);
+    private static void LogRegexTimeout(ILogger logger, string fileTypeCode, string pattern) => logger.LogWarning("EDI file type regex timeout: {FileTypeCode}, Pattern={Pattern}", fileTypeCode, pattern);
 
-    [LoggerMessage(Level = LogLevel.Warning, Message = "EDI file type not detected: {FileName}")]
-    private static partial void LogNoMatch(ILogger logger, string fileName);
+    private static void LogNoMatch(ILogger logger, string fileName) => logger.LogWarning("EDI file type not detected: {FileName}", fileName);
 }
 

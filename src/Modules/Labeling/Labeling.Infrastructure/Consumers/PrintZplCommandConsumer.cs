@@ -14,7 +14,7 @@ namespace Labeling.Infrastructure.Consumers;
 /// that doesn't require a pre-existing PrintJob row.
 /// Creates a PrintJob on-the-fly, dispatches ZPL, and publishes the result.
 /// </summary>
-public sealed partial class PrintZplCommandConsumer : IConsumer<PrintZplCommand>
+public sealed class PrintZplCommandConsumer : IConsumer<PrintZplCommand>
 {
     private readonly IZplPrinterClient _printerClient;
     private readonly ILabelingDbContext _dbContext;
@@ -84,23 +84,13 @@ public sealed partial class PrintZplCommandConsumer : IConsumer<PrintZplCommand>
         }
     }
 
-    [LoggerMessage(Level = LogLevel.Information,
-        Message = "Processing PrintZplCommand: JobId={JobId}, PrinterId={PrinterId}")]
-    private partial void LogProcessing(Guid jobId, Guid printerId);
+    private void LogProcessing(Guid jobId, Guid printerId) => _logger.LogInformation("Processing PrintZplCommand: JobId={JobId}, PrinterId={PrinterId}", jobId, printerId);
 
-    [LoggerMessage(Level = LogLevel.Warning,
-        Message = "Printer {PrinterId} not found in registry for PrintZplCommand")]
-    private partial void LogPrinterNotFound(Guid printerId);
+    private void LogPrinterNotFound(Guid printerId) => _logger.LogWarning("Printer {PrinterId} not found in registry for PrintZplCommand", printerId);
 
-    [LoggerMessage(Level = LogLevel.Information,
-        Message = "PrintZplCommand JobId={JobId} sent to {PrinterName} in {ElapsedMs}ms")]
-    private partial void LogSuccess(Guid jobId, string printerName, long elapsedMs);
+    private void LogSuccess(Guid jobId, string printerName, long elapsedMs) => _logger.LogInformation("PrintZplCommand JobId={JobId} sent to {PrinterName} in {ElapsedMs}ms", jobId, printerName, elapsedMs);
 
-    [LoggerMessage(Level = LogLevel.Error,
-        Message = "PrintZplCommand JobId={JobId} PERMANENT failure on {PrinterName}")]
-    private partial void LogFailedPermanent(Guid jobId, string printerName, Exception ex);
+    private void LogFailedPermanent(Guid jobId, string printerName, Exception ex) => _logger.LogError(ex, "PrintZplCommand JobId={JobId} PERMANENT failure on {PrinterName}", jobId, printerName);
 
-    [LoggerMessage(Level = LogLevel.Warning,
-        Message = "PrintZplCommand JobId={JobId} TRANSIENT failure on {PrinterName} — will retry")]
-    private partial void LogFailedTransient(Guid jobId, string printerName, Exception ex);
+    private void LogFailedTransient(Guid jobId, string printerName, Exception ex) => _logger.LogWarning(ex, "PrintZplCommand JobId={JobId} TRANSIENT failure on {PrinterName} — will retry", jobId, printerName);
 }

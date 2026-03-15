@@ -9,18 +9,36 @@ using System.Text.Json;
 
 namespace EDI.Infrastructure.Worker;
 
-public partial class EdiOutboxProcessorBackgroundService(
+public class EdiOutboxProcessorBackgroundService(
     IServiceProvider serviceProvider,
     ILogger<EdiOutboxProcessorBackgroundService> logger) : BackgroundService
 {
-    [LoggerMessage(Level = LogLevel.Information, Message = "EDI Outbox Processor started.")]
-    private static partial void LogServiceStarted(ILogger logger);
+    private static readonly Action<ILogger, Exception?> _logServiceStarted =
+        LoggerMessage.Define(
+            LogLevel.Information,
+            new EventId(2900, nameof(LogServiceStarted)),
+            "EDI Outbox Processor started.");
 
-    [LoggerMessage(Level = LogLevel.Error, Message = "Error processing EDI outbox messages.")]
-    private static partial void LogProcessingError(ILogger logger, Exception ex);
+    private static readonly Action<ILogger, Exception?> _logProcessingError =
+        LoggerMessage.Define(
+            LogLevel.Error,
+            new EventId(2901, nameof(LogProcessingError)),
+            "Error processing EDI outbox messages.");
 
-    [LoggerMessage(Level = LogLevel.Error, Message = "Failed to process outbox message {MessageId}")]
-    private static partial void LogMessageProcessingError(ILogger logger, Exception ex, Guid messageId);
+    private static readonly Action<ILogger, Guid, Exception?> _logMessageProcessingError =
+        LoggerMessage.Define<Guid>(
+            LogLevel.Error,
+            new EventId(2902, nameof(LogMessageProcessingError)),
+            "Failed to process outbox message {MessageId}.");
+
+    private static void LogServiceStarted(ILogger logger) =>
+        _logServiceStarted(logger, null);
+
+    private static void LogProcessingError(ILogger logger, Exception ex) =>
+        _logProcessingError(logger, ex);
+
+    private static void LogMessageProcessingError(ILogger logger, Exception ex, Guid messageId) =>
+        _logMessageProcessingError(logger, messageId, ex);
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {

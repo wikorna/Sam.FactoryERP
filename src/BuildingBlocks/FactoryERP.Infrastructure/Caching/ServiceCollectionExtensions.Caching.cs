@@ -168,22 +168,13 @@ public static partial class ServiceCollectionExtensionsCaching
 
     private const string LogCategory = "FactoryERP.Infrastructure.Caching";
 
-    [LoggerMessage(Level = LogLevel.Information,
-        Message = "Cache mode: HybridCache L1+L2 (Redis). Connecting — instance={InstanceName}")]
-    private static partial void LogRedisAttempt(ILogger logger, string instanceName);
+    private static void LogRedisAttempt(ILogger logger, string instanceName) => logger.LogInformation("Cache mode: HybridCache L1+L2 (Redis). Connecting — instance={InstanceName}", instanceName);
 
-    [LoggerMessage(Level = LogLevel.Information,
-        Message = "Cache mode: HybridCache L1+L2 (Redis). Connected in {ElapsedMs}ms — instance={InstanceName}")]
-    private static partial void LogRedisConnected(ILogger logger, string instanceName, long elapsedMs);
+    private static void LogRedisConnected(ILogger logger, string instanceName, long elapsedMs) => logger.LogInformation("Cache mode: HybridCache L1+L2 (Redis). Connected in {ElapsedMs}ms — instance={InstanceName}", instanceName, elapsedMs);
 
-    [LoggerMessage(Level = LogLevel.Critical,
-        Message = "Cache mode: Redis connection FAILED (AbortOnConnectFail=true) — instance={InstanceName}. Host will not start.")]
-    private static partial void LogRedisFailFast(ILogger logger, string instanceName, Exception ex);
+    private static void LogRedisFailFast(ILogger logger, string instanceName, Exception ex) => logger.LogCritical(ex, "Cache mode: Redis connection FAILED (AbortOnConnectFail=true) — instance={InstanceName}. Host will not start.", instanceName);
 
-    [LoggerMessage(Level = LogLevel.Warning,
-        Message = "Cache mode: Redis connection failed — instance={InstanceName}. " +
-                  "Continuing in L1-only mode (fail-open). Redis will reconnect automatically.")]
-    private static partial void LogRedisFailOpen(ILogger logger, string instanceName, Exception ex);
+    private static void LogRedisFailOpen(ILogger logger, string instanceName, Exception ex) => logger.LogWarning(ex, "Cache mode: Redis connection failed — instance={InstanceName}. ", instanceName);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -194,12 +185,9 @@ public static partial class ServiceCollectionExtensionsCaching
 /// Emits the "L1-only" mode log line after the full logger pipeline (Serilog etc.)
 /// is active.  Only registered when <c>Cache:Redis:Enabled=false</c>.
 /// </summary>
-internal sealed partial class CacheL1OnlyLogService(ILoggerFactory loggerFactory) : BackgroundService
+internal sealed class CacheL1OnlyLogService(ILoggerFactory loggerFactory) : BackgroundService
 {
-    [LoggerMessage(Level = LogLevel.Information,
-        Message = "Cache mode: HybridCache L1-only (in-memory). " +
-                  "Set Cache:Redis:Enabled=true and Cache:Redis:ConnectionString to enable Redis L2.")]
-    private static partial void LogL1Only(ILogger logger);
+    private static void LogL1Only(ILogger logger) => logger.LogInformation("Cache mode: HybridCache L1-only (in-memory). ");
 
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {

@@ -11,7 +11,7 @@ namespace EDI.Infrastructure.Parsers;
 /// Config-driven CSV parser that uses <see cref="EdiFileTypeConfig"/> column definitions
 /// to parse any file type without code changes.
 /// </summary>
-public sealed partial class ConfigDrivenCsvParser(ILogger<ConfigDrivenCsvParser> logger)
+public sealed class ConfigDrivenCsvParser(ILogger<ConfigDrivenCsvParser> logger)
 {
     /// <summary>
     /// Parse a CSV stream into generic staging rows using the provided config.
@@ -175,7 +175,6 @@ public sealed partial class ConfigDrivenCsvParser(ILogger<ConfigDrivenCsvParser>
         return fields;
     }
 
-    [LoggerMessage(Level = LogLevel.Information, Message = "Config-driven CSV parse complete: FileType={FileTypeCode}, Rows={RowCount}")]
-    private static partial void LogParseComplete(ILogger logger, string fileTypeCode, int rowCount);
+    private static void LogParseComplete(ILogger logger, string fileTypeCode, int rowCount) => logger.LogInformation("Config-driven CSV parse complete: FileType={FileTypeCode}, Rows={RowCount}", fileTypeCode, rowCount);
 }
 

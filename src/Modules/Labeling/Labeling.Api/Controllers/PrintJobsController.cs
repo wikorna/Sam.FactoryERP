@@ -7,7 +7,7 @@ namespace Labeling.Api.Controllers;
 
 [ApiController]
 [Route("api/print")]
-public partial class PrintJobsController : ControllerBase
+public class PrintJobsController : ControllerBase
 {
     private readonly IPublishEndpoint _publishEndpoint;
     private readonly ILogger<PrintJobsController> _logger;
@@ -58,9 +58,7 @@ public partial class PrintJobsController : ControllerBase
         return Accepted(new { JobId = jobId, Message = "Print job queued successfully." });
     }
 
-    [LoggerMessage(Level = LogLevel.Information,
-        Message = "Publishing PrintZplCommand for JobId {JobId}, Printer {PrinterId}, ZPL: {Zpl}")]
-    private static partial void LogPublishingPrintJob(ILogger logger, Guid jobId, Guid printerId, string zpl);
+    private static void LogPublishingPrintJob(ILogger logger, Guid jobId, Guid printerId, string zpl) => logger.LogInformation("Publishing PrintZplCommand for JobId {JobId}, Printer {PrinterId}, ZPL: {Zpl}", jobId, printerId, zpl);
 }
 
 public class PrintZplRequest

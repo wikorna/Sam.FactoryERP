@@ -15,7 +15,7 @@ namespace Notification.Infrastructure.Consumers;
 /// Idempotency: the dedup key format is <c>QrPrintFailed:{PrintJobId}:{UserId}</c>.
 /// On MassTransit redelivery the service silently returns the existing notification.
 /// </remarks>
-public sealed partial class QrPrintFailedNotificationConsumer
+public sealed class QrPrintFailedNotificationConsumer
     : IConsumer<QrPrintFailedIntegrationEvent>
 {
     private readonly INotificationService _notificationService;
@@ -80,16 +80,10 @@ public sealed partial class QrPrintFailedNotificationConsumer
         LogProcessed(msg.PrintJobId, recipients.Count);
     }
 
-    [LoggerMessage(Level = LogLevel.Information,
-        Message = "Consuming QrPrintFailedIntegrationEvent: PrintJobId={PrintJobId}, CorrelationId={CorrelationId}")]
-    private partial void LogConsuming(Guid printJobId, Guid correlationId);
+    private void LogConsuming(Guid printJobId, Guid correlationId) => _logger.LogInformation("Consuming QrPrintFailedIntegrationEvent: PrintJobId={PrintJobId}, CorrelationId={CorrelationId}", printJobId, correlationId);
 
-    [LoggerMessage(Level = LogLevel.Warning,
-        Message = "QrPrintFailedIntegrationEvent for PrintJobId={PrintJobId} has no resolvable recipients — skipping notification")]
-    private partial void LogNoRecipients(Guid printJobId);
+    private void LogNoRecipients(Guid printJobId) => _logger.LogWarning("QrPrintFailedIntegrationEvent for PrintJobId={PrintJobId} has no resolvable recipients — skipping notification", printJobId);
 
-    [LoggerMessage(Level = LogLevel.Information,
-        Message = "QrPrintFailed notification created for PrintJobId={PrintJobId}, recipients={RecipientCount}")]
-    private partial void LogProcessed(Guid printJobId, int recipientCount);
+    private void LogProcessed(Guid printJobId, int recipientCount) => _logger.LogInformation("QrPrintFailed notification created for PrintJobId={PrintJobId}, recipients={RecipientCount}", printJobId, recipientCount);
 }
 

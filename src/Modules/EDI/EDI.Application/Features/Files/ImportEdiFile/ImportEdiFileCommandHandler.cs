@@ -6,17 +6,15 @@ using Microsoft.Extensions.Logging;
 
 namespace EDI.Application.Features.Files.ImportEdiFile;
 
-public sealed partial class ImportEdiFileCommandHandler(
+public sealed class ImportEdiFileCommandHandler(
     IEdiStagingFileRepository repository,
     IOutboxPublisher outboxPublisher,
     ILogger<ImportEdiFileCommandHandler> logger)
     : IRequestHandler<ImportEdiFileCommand, ImportEdiFileResult>
 {
-    [LoggerMessage(Level = LogLevel.Information, Message = "Queuing EDI file import: {StagingId}")]
-    private static partial void LogImporting(ILogger logger, Guid stagingId);
+    private static void LogImporting(ILogger logger, Guid stagingId) => logger.LogInformation("Queuing EDI file import: {StagingId}", stagingId);
 
-    [LoggerMessage(Level = LogLevel.Warning, Message = "Cannot import staging file {StagingId} because its status is {Status}")]
-    private static partial void LogInvalidStatus(ILogger logger, Guid stagingId, EdiStagingStatus status);
+    private static void LogInvalidStatus(ILogger logger, Guid stagingId, EdiStagingStatus status) => logger.LogWarning("Cannot import staging file {StagingId} because its status is {Status}", stagingId, status);
 
     public async Task<ImportEdiFileResult> Handle(ImportEdiFileCommand request, CancellationToken cancellationToken)
     {

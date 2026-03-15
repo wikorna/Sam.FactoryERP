@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 
 namespace EDI.Application.Features.UploadEdiBatch;
 
-public sealed partial class UploadEdiBatchCommandHandler(
+public sealed class UploadEdiBatchCommandHandler(
     IEdiFileStore fileStore,
     IEdiFileJobRepository jobs,
     IFileTypeDetector detector,
@@ -126,16 +126,12 @@ public sealed partial class UploadEdiBatchCommandHandler(
         return Convert.ToHexString(hash);
     }
 
-    [LoggerMessage(Level = LogLevel.Information, Message = "EDI file uploaded: {FileName}, JobId={JobId}, FileType={FileType}")]
-    private static partial void LogFileUploaded(ILogger logger, string fileName, Guid jobId, string fileType);
+    private static void LogFileUploaded(ILogger logger, string fileName, Guid jobId, string fileType) => logger.LogInformation("EDI file uploaded: {FileName}, JobId={JobId}, FileType={FileType}", fileName, jobId, fileType);
 
-    [LoggerMessage(Level = LogLevel.Warning, Message = "EDI duplicate file skipped: {FileName}, SHA256={Sha256}")]
-    private static partial void LogDuplicateFile(ILogger logger, string fileName, string sha256);
+    private static void LogDuplicateFile(ILogger logger, string fileName, string sha256) => logger.LogWarning("EDI duplicate file skipped: {FileName}, SHA256={Sha256}", fileName, sha256);
 
-    [LoggerMessage(Level = LogLevel.Warning, Message = "EDI file size exceeded: {FileName}, Size={Size}, Max={MaxSize}")]
-    private static partial void LogFileSizeExceeded(ILogger logger, string fileName, long size, long maxSize);
+    private static void LogFileSizeExceeded(ILogger logger, string fileName, long size, long maxSize) => logger.LogWarning("EDI file size exceeded: {FileName}, Size={Size}, Max={MaxSize}", fileName, size, maxSize);
 
-    [LoggerMessage(Level = LogLevel.Error, Message = "EDI file upload error: {FileName}")]
-    private static partial void LogFileUploadError(ILogger logger, string fileName, Exception ex);
+    private static void LogFileUploadError(ILogger logger, string fileName, Exception ex) => logger.LogError(ex, "EDI file upload error: {FileName}", fileName);
 }
 

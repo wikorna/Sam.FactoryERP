@@ -11,7 +11,7 @@ namespace FactoryERP.ApiHost.Hubs;
 /// <see cref="INotificationClient"/>.
 /// </summary>
 [Authorize]
-public sealed partial class NotificationHub(ILogger<NotificationHub> logger) : Hub<INotificationClient>
+public sealed class NotificationHub(ILogger<NotificationHub> logger) : Hub<INotificationClient>
 {
     private const string RoleClaimType = "role";
     private const string RoleGroupPrefix = "role:";
@@ -64,21 +64,9 @@ public sealed partial class NotificationHub(ILogger<NotificationHub> logger) : H
     private static string BuildRoleGroupName(string role)
         => $"{RoleGroupPrefix}{role}";
 
-    [LoggerMessage(
-        EventId = 1001,
-        Level = LogLevel.Information,
-        Message = "SignalR connected: user={UserId}, connectionId={ConnectionId}, roleGroups={RoleGroupCount}")]
-    private partial void LogConnected(string userId, string connectionId, int roleGroupCount);
+    private void LogConnected(string userId, string connectionId, int roleGroupCount) => logger.LogInformation("SignalR connected: user={UserId}, connectionId={ConnectionId}, roleGroups={RoleGroupCount}", userId, connectionId, roleGroupCount);
 
-    [LoggerMessage(
-        EventId = 1002,
-        Level = LogLevel.Information,
-        Message = "SignalR disconnected: user={UserId}, connectionId={ConnectionId}")]
-    private partial void LogDisconnected(string userId, string connectionId);
+    private void LogDisconnected(string userId, string connectionId) => logger.LogInformation("SignalR disconnected: user={UserId}, connectionId={ConnectionId}", userId, connectionId);
 
-    [LoggerMessage(
-        EventId = 1003,
-        Level = LogLevel.Warning,
-        Message = "SignalR disconnected with error: user={UserId}, connectionId={ConnectionId}")]
-    private partial void LogDisconnectedWithError(string userId, string connectionId, Exception ex);
+    private void LogDisconnectedWithError(string userId, string connectionId, Exception ex) => logger.LogWarning(ex, "SignalR disconnected with error: user={UserId}, connectionId={ConnectionId}", userId, connectionId);
 }

@@ -14,7 +14,7 @@ namespace Notification.Infrastructure.Services;
 /// Flow: validate → dedup check → persist → publish <see cref="NotificationCreatedIntegrationEvent"/>
 /// → (optional) best-effort realtime SignalR push via <see cref="INotificationDispatcher"/>.
 /// </summary>
-public sealed partial class NotificationService : INotificationService
+public sealed class NotificationService : INotificationService
 {
     private readonly INotificationDbContext    _db;
     private readonly IPublishEndpoint          _bus;
@@ -185,20 +185,12 @@ public sealed partial class NotificationService : INotificationService
 
     // ── Analyzer-compliant log helpers ────────────────────────────────────────
 
-    [LoggerMessage(Level = LogLevel.Information,
-        Message = "Notification {NotificationId} created for {DeliveryCount} user(s), category={Category}")]
-    private partial void LogCreated(Guid notificationId, int deliveryCount, NotificationCategory category);
+    private void LogCreated(Guid notificationId, int deliveryCount, NotificationCategory category) => _logger.LogInformation("Notification {NotificationId} created for {DeliveryCount} user(s), category={Category}", notificationId, deliveryCount, category);
 
-    [LoggerMessage(Level = LogLevel.Debug,
-        Message = "Notification dedup hit for key '{DeduplicationKey}', existing={ExistingId} — skipping")]
-    private partial void LogDuplicateSkipped(string deduplicationKey, Guid existingId);
+    private void LogDuplicateSkipped(string deduplicationKey, Guid existingId) => _logger.LogDebug("Notification dedup hit for key '{DeduplicationKey}', existing={ExistingId} — skipping", deduplicationKey, existingId);
 
-    [LoggerMessage(Level = LogLevel.Warning,
-        Message = "Bus publish failed for user {UserId}, notification {NotificationId} — notification persisted in DB")]
-    private partial void LogBusPublishFailed(string userId, Guid notificationId, Exception ex);
+    private void LogBusPublishFailed(string userId, Guid notificationId, Exception ex) => _logger.LogWarning(ex, "Bus publish failed for user {UserId}, notification {NotificationId} — notification persisted in DB", userId, notificationId);
 
-    [LoggerMessage(Level = LogLevel.Warning,
-        Message = "Realtime push failed for user {UserId}, notification {NotificationId} — inbox delivery unaffected")]
-    private partial void LogRealtimePushFailed(string userId, Guid notificationId, Exception ex);
+    private void LogRealtimePushFailed(string userId, Guid notificationId, Exception ex) => _logger.LogWarning(ex, "Realtime push failed for user {UserId}, notification {NotificationId} — inbox delivery unaffected", userId, notificationId);
 }
 

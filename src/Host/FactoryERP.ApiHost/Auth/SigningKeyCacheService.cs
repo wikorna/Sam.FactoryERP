@@ -11,7 +11,7 @@ namespace FactoryERP.ApiHost.Auth;
 /// token-validation pipeline, which would block a thread-pool thread on every request.
 /// </para>
 /// </summary>
-internal sealed partial class SigningKeyCacheService : BackgroundService
+internal sealed class SigningKeyCacheService : BackgroundService
 {
     /// <summary>How often to re-read keys from the key store.</summary>
     private static readonly TimeSpan RefreshInterval = TimeSpan.FromMinutes(5);
@@ -105,12 +105,8 @@ internal sealed partial class SigningKeyCacheService : BackgroundService
     }
 
     // ── Structured logging ──────────────────────────────────────────────
-    [LoggerMessage(Level = LogLevel.Information,
-        Message = "JWT signing-key cache refreshed ({Count} key(s) loaded)")]
-    private static partial void LogKeysRefreshed(ILogger logger, int count);
+    private static void LogKeysRefreshed(ILogger logger, int count) => logger.LogInformation("JWT signing-key cache refreshed ({Count} key(s) loaded)", count);
 
-    [LoggerMessage(Level = LogLevel.Warning,
-        Message = "JWT signing-key refresh failed (attempt {Attempt}/{MaxAttempts})")]
-    private static partial void LogKeyRefreshFailed(ILogger logger, int attempt, int maxAttempts, Exception ex);
+    private static void LogKeyRefreshFailed(ILogger logger, int attempt, int maxAttempts, Exception ex) => logger.LogWarning(ex, "JWT signing-key refresh failed (attempt {Attempt}/{MaxAttempts})", attempt, maxAttempts);
 }
 

@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.SignalR;
 namespace FactoryERP.ApiHost.Hubs;
 
 [Authorize]
-public sealed partial class ProgressHub : Hub<IProgressClient>
+public sealed class ProgressHub : Hub<IProgressClient>
 {
     private readonly ILogger<ProgressHub> _logger;
     private readonly IJobAccessService _jobAccessService;
@@ -80,27 +80,15 @@ public sealed partial class ProgressHub : Hub<IProgressClient>
         return $"job:{jobId.Trim()}";
     }
 
-    [LoggerMessage(Level = LogLevel.Information,
-        Message = "Progress hub connected: user={UserId}")]
-    private partial void LogConnected(string userId);
+    private void LogConnected(string userId) => _logger.LogInformation("Progress hub connected: user={UserId}", userId);
 
-    [LoggerMessage(Level = LogLevel.Information,
-        Message = "Progress hub disconnected: user={UserId}")]
-    private partial void LogDisconnected(string userId);
+    private void LogDisconnected(string userId) => _logger.LogInformation("Progress hub disconnected: user={UserId}", userId);
 
-    [LoggerMessage(Level = LogLevel.Warning,
-        Message = "Progress hub disconnected with error: user={UserId}")]
-    private partial void LogDisconnectedWithError(string userId, Exception ex);
+    private void LogDisconnectedWithError(string userId, Exception ex) => _logger.LogWarning(ex, "Progress hub disconnected with error: user={UserId}", userId);
 
-    [LoggerMessage(Level = LogLevel.Information,
-        Message = "Progress hub group joined: user={UserId}, jobId={JobId}")]
-    private partial void LogJoined(string userId, string jobId);
+    private void LogJoined(string userId, string jobId) => _logger.LogInformation("Progress hub group joined: user={UserId}, jobId={JobId}", userId, jobId);
 
-    [LoggerMessage(Level = LogLevel.Information,
-        Message = "Progress hub group left: user={UserId}, jobId={JobId}")]
-    private partial void LogLeft(string userId, string jobId);
+    private void LogLeft(string userId, string jobId) => _logger.LogInformation("Progress hub group left: user={UserId}, jobId={JobId}", userId, jobId);
 
-    [LoggerMessage(Level = LogLevel.Warning,
-        Message = "Progress hub join denied: user={UserId}, jobId={JobId}")]
-    private partial void LogJoinDenied(string userId, string jobId);
+    private void LogJoinDenied(string userId, string jobId) => _logger.LogWarning("Progress hub join denied: user={UserId}, jobId={JobId}", userId, jobId);
 }

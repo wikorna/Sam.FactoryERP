@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 
 namespace EDI.Application.Features.ParseEdiFile;
 
-public sealed partial class ParseEdiFileCommandHandler(
+public sealed class ParseEdiFileCommandHandler(
     IEdiFileStore fileStore,
     IEdiFileJobRepository jobs,
     IEdiParserFactory parsers,
@@ -163,6 +163,5 @@ public sealed partial class ParseEdiFileCommandHandler(
         return count;
     }
 
-    [LoggerMessage(Level = LogLevel.Information, Message = "Config-driven parse: JobId={JobId}, FileType={FileTypeCode}")]
-    private static partial void LogConfigDrivenParse(ILogger logger, Guid jobId, string fileTypeCode);
+    private static void LogConfigDrivenParse(ILogger logger, Guid jobId, string fileTypeCode) => logger.LogInformation("Config-driven parse: JobId={JobId}, FileType={FileTypeCode}", jobId, fileTypeCode);
 }

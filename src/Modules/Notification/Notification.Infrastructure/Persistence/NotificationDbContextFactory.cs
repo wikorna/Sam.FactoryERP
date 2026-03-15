@@ -9,15 +9,23 @@ public sealed class NotificationDbContextFactory : IDesignTimeDbContextFactory<N
 {
     public NotificationDbContext CreateDbContext(string[] args)
     {
-        // Resolve connection string from environment or local appsettings
-        var connectionString =
-            Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection")
-            ?? "Host=localhost;Port=5432;Database=FactoryDB;Username=wikorna;Password=password";
+        var basePath = Directory.GetCurrentDirectory();
+        var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
+
+        var config = new ConfigurationBuilder()
+            .SetBasePath(basePath)
+            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
+            .AddJsonFile($"appsettings.{environment}.json", optional: true, reloadOnChange: false)
+            .AddEnvironmentVariables()
+            .Build();
+
+        var cs = config.GetConnectionString("DefaultConnection")
+                 ?? throw new InvalidOperationException(
+                     "ConnectionStrings:DefaultConnection not found. " +
+                     "Run with --startup-project pointing to ApiHost or WorkerHost.");
 
         var options = new DbContextOptionsBuilder<NotificationDbContext>()
-            .UseNpgsql(
-                connectionString,
-                b => b.MigrationsHistoryTable("__EFMigrationsHistory", "notifications"))
+            .UseNpgsql(cs, b => b.MigrationsHistoryTable("__EFMigrationsHistory", "notifications"))
             .Options;
 
         return new NotificationDbContext(options);

@@ -14,7 +14,7 @@ namespace Labeling.Infrastructure.Consumers;
 /// Loads the PrintJob aggregate, dispatches ZPL via <see cref="IZplPrinterClient"/>,
 /// and publishes completion/failure events.
 /// </summary>
-public sealed partial class QrPrintRequestedConsumer : IConsumer<QrPrintRequestedIntegrationEvent>
+public sealed class QrPrintRequestedConsumer : IConsumer<QrPrintRequestedIntegrationEvent>
 {
     private readonly IZplPrinterClient _printerClient;
     private readonly ILabelingDbContext _dbContext;
@@ -141,35 +141,19 @@ public sealed partial class QrPrintRequestedConsumer : IConsumer<QrPrintRequeste
 
     // ── Structured logging ────────────────────────────────────────────────
 
-    [LoggerMessage(Level = LogLevel.Information,
-        Message = "Consuming QrPrintRequested: PrintJobId={PrintJobId}, PrinterId={PrinterId}, CorrelationId={CorrelationId}")]
-    private partial void LogConsuming(Guid printJobId, Guid printerId, Guid correlationId);
+    private void LogConsuming(Guid printJobId, Guid printerId, Guid correlationId) => _logger.LogInformation("Consuming QrPrintRequested: PrintJobId={PrintJobId}, PrinterId={PrinterId}, CorrelationId={CorrelationId}", printJobId, printerId, correlationId);
 
-    [LoggerMessage(Level = LogLevel.Warning,
-        Message = "PrintJob {PrintJobId} not found in database — skipping")]
-    private partial void LogPrintJobNotFound(Guid printJobId);
+    private void LogPrintJobNotFound(Guid printJobId) => _logger.LogWarning("PrintJob {PrintJobId} not found in database — skipping", printJobId);
 
-    [LoggerMessage(Level = LogLevel.Warning,
-        Message = "Printer {PrinterId} not found in registry — dead-lettering")]
-    private partial void LogPrinterNotFound(Guid printerId);
+    private void LogPrinterNotFound(Guid printerId) => _logger.LogWarning("Printer {PrinterId} not found in registry — dead-lettering", printerId);
 
-    [LoggerMessage(Level = LogLevel.Information,
-        Message = "PrintJob {PrintJobId} already printed — skipping duplicate")]
-    private partial void LogAlreadyPrinted(Guid printJobId);
+    private void LogAlreadyPrinted(Guid printJobId) => _logger.LogInformation("PrintJob {PrintJobId} already printed — skipping duplicate", printJobId);
 
-    [LoggerMessage(Level = LogLevel.Information,
-        Message = "PrintJob {PrintJobId} sent to printer {PrinterName} in {ElapsedMs}ms")]
-    private partial void LogPrintSucceeded(Guid printJobId, string printerName, long elapsedMs);
+    private void LogPrintSucceeded(Guid printJobId, string printerName, long elapsedMs) => _logger.LogInformation("PrintJob {PrintJobId} sent to printer {PrinterName} in {ElapsedMs}ms", printJobId, printerName, elapsedMs);
 
-    [LoggerMessage(Level = LogLevel.Error,
-        Message = "PrintJob {PrintJobId} PERMANENT failure on printer {PrinterName}")]
-    private partial void LogPrintFailedPermanent(Guid printJobId, string printerName, Exception ex);
+    private void LogPrintFailedPermanent(Guid printJobId, string printerName, Exception ex) => _logger.LogError(ex, "PrintJob {PrintJobId} PERMANENT failure on printer {PrinterName}", printJobId, printerName);
 
-    [LoggerMessage(Level = LogLevel.Warning,
-        Message = "PrintJob {PrintJobId} TRANSIENT failure on printer {PrinterName}, attempt #{FailCount} — will retry")]
-    private partial void LogPrintFailedTransient(Guid printJobId, string printerName, int failCount, Exception ex);
+    private void LogPrintFailedTransient(Guid printJobId, string printerName, int failCount, Exception ex) => _logger.LogWarning(ex, "PrintJob {PrintJobId} TRANSIENT failure on printer {PrinterName}, attempt #{FailCount} — will retry", printJobId, printerName, failCount);
 
-    [LoggerMessage(Level = LogLevel.Error,
-        Message = "PrintJob {PrintJobId} UNKNOWN failure on printer {PrinterName}")]
-    private partial void LogPrintFailedUnknown(Guid printJobId, string printerName, Exception ex);
+    private void LogPrintFailedUnknown(Guid printJobId, string printerName, Exception ex) => _logger.LogError(ex, "PrintJob {PrintJobId} UNKNOWN failure on printer {PrinterName}", printJobId, printerName);
 }

@@ -70,7 +70,12 @@
     <PackageVersion Include="Swashbuckle.AspNetCore.Swagger" Version="10.1.5" />
     <PackageVersion Include="Swashbuckle.AspNetCore.SwaggerGen" Version="10.1.5" />
     <PackageVersion Include="Swashbuckle.AspNetCore.SwaggerUI" Version="10.1.5" />
-    <PackageVersion Include="Microsoft.OpenApi" Version="3.4.0" />
+    <!-- Pinned to the latest 2.x release — Swashbuckle 10.1.5 requires >= 2.4.1 and was compiled
+         against the 2.x API.  Microsoft.OpenApi 3.x changed IOpenApiRequestBody.Content from
+         IDictionary<string,OpenApiMediaType> to IDictionary<string,IOpenApiMediaType>, which
+         causes a MissingMethodException at runtime when Swashbuckle generates swagger.json.
+         Do NOT upgrade to 3.x until Swashbuckle ships a matching release. -->
+    <PackageVersion Include="Microsoft.OpenApi" Version="2.7.0" />
     <!-- ===================================================== -->
     <!-- Health Checks (stable 9.x)                            -->
     <!-- ===================================================== -->

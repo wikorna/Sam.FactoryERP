@@ -29,7 +29,7 @@ namespace Printing.Infrastructure.Consumers;
 /// The ZebraLabelPrinterClient's Polly retry covers transient socket failures within
 /// a single delivery.
 /// </remarks>
-public sealed partial class PrintShipmentItemConsumer(
+public sealed class PrintShipmentItemConsumer(
     IShipmentBatchRepository repository,
     IQrPayloadBuilder qrBuilder,
     ILabelTemplateResolver templateResolver,
@@ -168,31 +168,40 @@ public sealed partial class PrintShipmentItemConsumer(
 
     // ── Structured log messages ───────────────────────────────────────────
 
-    [LoggerMessage(Level = LogLevel.Information,
-        Message = "Consuming PrintShipmentItemCommand: ItemId={ItemId}, Batch={BatchNumber}, Key={Key}")]
-    private static partial void LogConsuming(
-        ILogger l, Guid itemId, string batchNumber, string key);
+    private static readonly Action<ILogger, Guid, Guid, Exception?> _logBatchNotFound =
+        LoggerMessage.Define<Guid, Guid>(
+            LogLevel.Warning,
+            new EventId(3601, nameof(LogBatchNotFound)),
+            "Batch {BatchId} not found for item {ItemId} — skipping.");
 
-    [LoggerMessage(Level = LogLevel.Warning,
-        Message = "Batch {BatchId} not found for item {ItemId} — skipping.")]
-    private static partial void LogBatchNotFound(ILogger l, Guid batchId, Guid itemId);
+    private static readonly Action<ILogger, Guid, Guid, Exception?> _logItemNotFound =
+        LoggerMessage.Define<Guid, Guid>(
+            LogLevel.Warning,
+            new EventId(3602, nameof(LogItemNotFound)),
+            "Item {ItemId} not found in batch {BatchId} — skipping.");
 
-    [LoggerMessage(Level = LogLevel.Warning,
-        Message = "Item {ItemId} not found in batch {BatchId} — skipping.")]
-    private static partial void LogItemNotFound(ILogger l, Guid itemId, Guid batchId);
+    private static readonly Action<ILogger, Guid, string, Exception?> _logAlreadyPrinted =
+        LoggerMessage.Define<Guid, string>(
+            LogLevel.Information,
+            new EventId(3603, nameof(LogAlreadyPrinted)),
+            "Item {ItemId} already printed (key={Key}) — idempotent skip.");
 
-    [LoggerMessage(Level = LogLevel.Information,
-        Message = "Item {ItemId} already printed (key={Key}) — idempotent skip.")]
-    private static partial void LogAlreadyPrinted(ILogger l, Guid itemId, string key);
+    private static void LogConsuming(ILogger l, Guid itemId, string batchNumber, string key) =>
+        l.LogInformation("Consuming PrintShipmentItemCommand: ItemId={ItemId}, Batch={BatchNumber}, Key={Key}", itemId, batchNumber, key);
 
-    [LoggerMessage(Level = LogLevel.Warning,
-        Message = "Permanent print failure for item {ItemId} on printer '{Printer}': [{Code}] {Message}")]
-    private static partial void LogPermanentFailure(
-        ILogger l, Guid itemId, string printer, string code, string message);
+    private static void LogBatchNotFound(ILogger logger, Guid batchId, Guid itemId) =>
+        _logBatchNotFound(logger, batchId, itemId, null);
 
-    [LoggerMessage(Level = LogLevel.Information,
-        Message = "Item {ItemId} printed on '{Printer}' at {PrintedAt} (batch={BatchNumber}).")]
-    private static partial void LogCompleted(
-        ILogger l, Guid itemId, string batchNumber, string printer, DateTime printedAt);
+    private static void LogItemNotFound(ILogger logger, Guid itemId, Guid batchId) =>
+        _logItemNotFound(logger, itemId, batchId, null);
+
+    private static void LogAlreadyPrinted(ILogger logger, Guid itemId, string key) =>
+        _logAlreadyPrinted(logger, itemId, key, null);
+
+    private static void LogPermanentFailure(ILogger l, Guid itemId, string printer, string code, string message) =>
+        l.LogWarning("Permanent print failure for item {ItemId} on printer '{Printer}': [{Code}] {Message}", itemId, printer, code, message);
+
+    private static void LogCompleted(ILogger l, Guid itemId, string batchNumber, string printer, DateTime printedAt) =>
+        l.LogInformation("Item {ItemId} printed on '{Printer}' at {PrintedAt} (batch={BatchNumber}).", itemId, batchNumber, printer, printedAt);
 }
 

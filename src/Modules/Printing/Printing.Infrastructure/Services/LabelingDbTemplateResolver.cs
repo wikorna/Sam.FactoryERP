@@ -10,7 +10,7 @@ namespace Printing.Infrastructure.Services;
 /// Resolves label templates from <c>labeling.LabelTemplates</c> via
 /// <see cref="ILabelingDbContext"/>.
 /// </summary>
-public sealed partial class LabelingDbTemplateResolver(
+public sealed class LabelingDbTemplateResolver(
     ILabelingDbContext dbContext,
     ILogger<LabelingDbTemplateResolver> logger)
     : ILabelTemplateResolver
@@ -46,9 +46,6 @@ public sealed partial class LabelingDbTemplateResolver(
         };
     }
 
-    [LoggerMessage(Level = LogLevel.Debug,
-        Message = "Label template resolved: Id={TemplateId}, Key={TemplateKey}, Version={Version}")]
-    private static partial void LogResolved(
-        ILogger logger, Guid templateId, string templateKey, string version);
+    private static void LogResolved(ILogger logger, Guid templateId, string templateKey, string version) => logger.LogDebug("Label template resolved: Id={TemplateId}, Key={TemplateKey}, Version={Version}", templateId, templateKey, version);
 }
 

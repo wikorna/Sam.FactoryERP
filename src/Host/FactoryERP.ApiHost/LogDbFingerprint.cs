@@ -9,15 +9,9 @@ namespace FactoryERP.ApiHost;
 /// </summary>
 internal static partial class DbFingerprint
 {
-    [LoggerMessage(Level = LogLevel.Information,
-        Message = "DB Fingerprint => db={Db}, user={User}, addr={Addr}:{Port} | {Ver}")]
-    private static partial void LogFingerprint(
-        ILogger logger, object db, object user, object addr, object port, object ver);
+    private static void LogFingerprint(ILogger logger, object db, object user, object addr, object port, object ver) => logger.LogInformation("DB Fingerprint => db={Db}, user={User}, addr={Addr}:{Port} | {Ver}", db, user, addr, port, ver);
 
-    [LoggerMessage(Level = LogLevel.Information,
-        Message = "DB Tables => labeling.OutboxState={OutboxState}, labeling.InboxState={InboxState}, labeling.OutboxMessage={OutboxMsg}")]
-    private static partial void LogTables(
-        ILogger logger, object outboxState, object inboxState, object outboxMsg);
+    private static void LogTables(ILogger logger, object outboxState, object inboxState, object outboxMsg) => logger.LogInformation("DB Tables => labeling.OutboxState={OutboxState}, labeling.InboxState={InboxState}, labeling.OutboxMessage={OutboxMsg}", outboxState, inboxState, outboxMsg);
 
     public static async Task LogAsync(IServiceProvider sp, ILogger logger, CancellationToken ct = default)
     {

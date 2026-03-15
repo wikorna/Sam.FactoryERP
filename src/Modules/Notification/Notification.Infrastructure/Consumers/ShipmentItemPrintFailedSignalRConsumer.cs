@@ -18,7 +18,7 @@ namespace Notification.Infrastructure.Consumers;
 /// Note: The WorkerHost also creates a *persistent* notification for failures via
 /// <c>QrPrintFailedNotificationConsumer</c>. This consumer handles the *realtime* UI update.
 /// </remarks>
-public sealed partial class ShipmentItemPrintFailedSignalRConsumer(
+public sealed class ShipmentItemPrintFailedSignalRConsumer(
     INotificationDispatcher dispatcher,
     ILogger<ShipmentItemPrintFailedSignalRConsumer> logger)
     : IConsumer<ShipmentItemPrintFailedEvent>
@@ -63,14 +63,8 @@ public sealed partial class ShipmentItemPrintFailedSignalRConsumer(
         LogPushed(logger, msg.ItemId, msg.BatchNumber, msg.ErrorCode);
     }
 
-    [LoggerMessage(Level = LogLevel.Debug,
-        Message = "Consuming ShipmentItemPrintFailedEvent: ItemId={ItemId}, Batch={BatchNumber}, Error={ErrorCode}")]
-    private static partial void LogConsuming(
-        ILogger l, Guid itemId, string batchNumber, string errorCode);
+    private static void LogConsuming(ILogger l, Guid itemId, string batchNumber, string errorCode) => l.LogDebug("Consuming ShipmentItemPrintFailedEvent: ItemId={ItemId}, Batch={BatchNumber}, Error={ErrorCode}", itemId, batchNumber, errorCode);
 
-    [LoggerMessage(Level = LogLevel.Information,
-        Message = "Pushed ItemFailed signal for item {ItemId} in batch {BatchNumber} (code {ErrorCode}).")]
-    private static partial void LogPushed(
-        ILogger l, Guid itemId, string batchNumber, string errorCode);
+    private static void LogPushed(ILogger l, Guid itemId, string batchNumber, string errorCode) => l.LogInformation("Pushed ItemFailed signal for item {ItemId} in batch {BatchNumber} (code {ErrorCode}).", itemId, batchNumber, errorCode);
 }
 

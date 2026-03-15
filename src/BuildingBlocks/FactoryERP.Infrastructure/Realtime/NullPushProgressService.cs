@@ -8,7 +8,7 @@ namespace FactoryERP.Infrastructure.Realtime;
 /// <c>WorkerHost</c> and any host that does not run a SignalR hub.
 /// All calls are logged at <c>Debug</c> level and complete synchronously.
 /// </summary>
-public sealed partial class NullPushProgressService : IPushProgressService
+public sealed class NullPushProgressService : IPushProgressService
 {
     private readonly ILogger<NullPushProgressService> _logger;
 
@@ -41,16 +41,10 @@ public sealed partial class NullPushProgressService : IPushProgressService
 
     // ── Analyzer-compliant log helpers ───────────────────────────────────────
 
-    [LoggerMessage(Level = LogLevel.Debug,
-        Message = "NullProgressService: would send progress for job {JobId}, percent={Percent}")]
-    private partial void LogProgress(string jobId, int percent);
+    private void LogProgress(string jobId, int percent) => _logger.LogDebug("NullProgressService: would send progress for job {JobId}, percent={Percent}", jobId, percent);
 
-    [LoggerMessage(Level = LogLevel.Debug,
-        Message = "NullProgressService: would send completed for job {JobId}, resultId={ResultId}")]
-    private partial void LogCompleted(string jobId, string resultId);
+    private void LogCompleted(string jobId, string resultId) => _logger.LogDebug("NullProgressService: would send completed for job {JobId}, resultId={ResultId}", jobId, resultId);
 
-    [LoggerMessage(Level = LogLevel.Debug,
-        Message = "NullProgressService: would send failed for job {JobId}, error={ErrorMessage}")]
-    private partial void LogFailed(string jobId, string errorMessage);
+    private void LogFailed(string jobId, string errorMessage) => _logger.LogDebug("NullProgressService: would send failed for job {JobId}, error={ErrorMessage}", jobId, errorMessage);
 }
 

@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace EDI.Application.Features.ImportSelectedRows;
 
-public sealed partial class ImportSelectedRowsCommandHandler(
+public sealed class ImportSelectedRowsCommandHandler(
     IEdiFileJobRepository jobs,
     IStagingRepository staging,
     IEdiFileStore fileStore,
@@ -60,7 +60,6 @@ public sealed partial class ImportSelectedRowsCommandHandler(
             job.Id, importedCount, skippedCount, job.Status.ToString());
     }
 
-    [LoggerMessage(Level = LogLevel.Information, Message = "EDI import complete: JobId={JobId}, Imported={Imported}, Skipped={Skipped}")]
-    private static partial void LogImportComplete(ILogger logger, Guid jobId, int imported, int skipped);
+    private static void LogImportComplete(ILogger logger, Guid jobId, int imported, int skipped) => logger.LogInformation("EDI import complete: JobId={JobId}, Imported={Imported}, Skipped={Skipped}", jobId, imported, skipped);
 }
 

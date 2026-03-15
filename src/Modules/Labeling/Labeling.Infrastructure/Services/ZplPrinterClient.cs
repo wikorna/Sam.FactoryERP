@@ -12,7 +12,7 @@ namespace Labeling.Infrastructure.Services;
 /// Resolves the correct <see cref="IPrinterTransport"/> for a <see cref="Printer"/>
 /// and sends ZPL with Polly retry for transient network faults.
 /// </summary>
-public sealed partial class ZplPrinterClient : IZplPrinterClient
+public sealed class ZplPrinterClient : IZplPrinterClient
 {
     private readonly Dictionary<PrinterProtocol, IPrinterTransport> _transports;
     private readonly ILogger<ZplPrinterClient> _logger;
@@ -120,23 +120,13 @@ public sealed partial class ZplPrinterClient : IZplPrinterClient
         LogRawSent(printer.Name, data.Length);
     }
 
-    [LoggerMessage(Level = LogLevel.Information,
-        Message = "Sending ZPL to printer {PrinterName} at {Host}:{Port}")]
-    private partial void LogSendingZpl(string printerName, string host, int port);
+    private void LogSendingZpl(string printerName, string host, int port) => _logger.LogInformation("Sending ZPL to printer {PrinterName} at {Host}:{Port}", printerName, host, port);
 
-    [LoggerMessage(Level = LogLevel.Information,
-        Message = "Sending {Bytes} bytes of raw data to printer {PrinterName} at {Host}:{Port}")]
-    private partial void LogSendingRaw(string printerName, string host, int port, int bytes);
+    private void LogSendingRaw(string printerName, string host, int port, int bytes) => _logger.LogInformation("Sending {Bytes} bytes of raw data to printer {PrinterName} at {Host}:{Port}", printerName, host, port, bytes);
 
-    [LoggerMessage(Level = LogLevel.Information,
-        Message = "ZPL sent successfully to printer {PrinterName}")]
-    private partial void LogZplSent(string printerName);
+    private void LogZplSent(string printerName) => _logger.LogInformation("ZPL sent successfully to printer {PrinterName}", printerName);
 
-    [LoggerMessage(Level = LogLevel.Information,
-        Message = "Raw data ({Bytes} bytes) sent successfully to printer {PrinterName}")]
-    private partial void LogRawSent(string printerName, int bytes);
+    private void LogRawSent(string printerName, int bytes) => _logger.LogInformation("Raw data ({Bytes} bytes) sent successfully to printer {PrinterName}", printerName, bytes);
 
-    [LoggerMessage(Level = LogLevel.Warning,
-        Message = "Retry attempt {AttemptNumber} for printer {Printer} — {ErrorMessage}")]
-    private partial void LogRetryAttempt(int attemptNumber, string printer, string errorMessage);
+    private void LogRetryAttempt(int attemptNumber, string printer, string errorMessage) => _logger.LogWarning("Retry attempt {AttemptNumber} for printer {Printer} — {ErrorMessage}", attemptNumber, printer, errorMessage);
 }

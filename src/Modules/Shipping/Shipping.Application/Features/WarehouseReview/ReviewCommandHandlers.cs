@@ -8,7 +8,7 @@ using Shipping.Domain.Enums;
 namespace Shipping.Application.Features.WarehouseReview;
 
 /// <summary>Handles full batch approval.</summary>
-public sealed partial class ApproveShipmentBatchCommandHandler(
+public sealed class ApproveShipmentBatchCommandHandler(
     IShipmentBatchRepository repository,
     IEventBus eventBus,
     ILogger<ApproveShipmentBatchCommandHandler> logger)
@@ -57,13 +57,11 @@ public sealed partial class ApproveShipmentBatchCommandHandler(
             batch.ReviewedAtUtc!.Value);
     }
 
-    [LoggerMessage(Level = LogLevel.Information,
-        Message = "Shipment batch approved: {BatchNumber} by {ReviewerUserId}")]
-    private static partial void LogApproved(ILogger logger, string batchNumber, Guid reviewerUserId);
+    private static void LogApproved(ILogger logger, string batchNumber, Guid reviewerUserId) => logger.LogInformation("Shipment batch approved: {BatchNumber} by {ReviewerUserId}", batchNumber, reviewerUserId);
 }
 
 /// <summary>Handles batch rejection.</summary>
-public sealed partial class RejectShipmentBatchCommandHandler(
+public sealed class RejectShipmentBatchCommandHandler(
     IShipmentBatchRepository repository,
     ILogger<RejectShipmentBatchCommandHandler> logger)
     : IRequestHandler<RejectShipmentBatchCommand, ReviewResultDto>
@@ -95,13 +93,11 @@ public sealed partial class RejectShipmentBatchCommandHandler(
             batch.ReviewedAtUtc!.Value);
     }
 
-    [LoggerMessage(Level = LogLevel.Information,
-        Message = "Shipment batch rejected: {BatchNumber} by {ReviewerUserId}, reason: {Reason}")]
-    private static partial void LogRejected(ILogger logger, string batchNumber, Guid reviewerUserId, string reason);
+    private static void LogRejected(ILogger logger, string batchNumber, Guid reviewerUserId, string reason) => logger.LogInformation("Shipment batch rejected: {BatchNumber} by {ReviewerUserId}, reason: {Reason}", batchNumber, reviewerUserId, reason);
 }
 
 /// <summary>Handles partial approval — per-item approve/exclude decisions.</summary>
-public sealed partial class PartiallyApproveShipmentBatchCommandHandler(
+public sealed class PartiallyApproveShipmentBatchCommandHandler(
     IShipmentBatchRepository repository,
     IEventBus eventBus,
     ILogger<PartiallyApproveShipmentBatchCommandHandler> logger)
@@ -180,9 +176,6 @@ public sealed partial class PartiallyApproveShipmentBatchCommandHandler(
             itemResults);
     }
 
-    [LoggerMessage(Level = LogLevel.Information,
-        Message = "Shipment batch partially approved: {BatchNumber} by {ReviewerUserId}, approved={ApprovedCount}, excluded={ExcludedCount}")]
-    private static partial void LogPartiallyApproved(
-        ILogger logger, string batchNumber, Guid reviewerUserId, int approvedCount, int excludedCount);
+    private static void LogPartiallyApproved(ILogger logger, string batchNumber, Guid reviewerUserId, int approvedCount, int excludedCount) => logger.LogInformation("Shipment batch partially approved: {BatchNumber} by {ReviewerUserId}, approved={ApprovedCount}, excluded={ExcludedCount}", batchNumber, reviewerUserId, approvedCount, excludedCount);
 }
 

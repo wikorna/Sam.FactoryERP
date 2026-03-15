@@ -19,7 +19,7 @@ namespace FactoryERP.ApiHost.Infrastructure.Realtime;
 /// authenticated user owns or is permitted to observe the requested job.
 /// </para>
 /// </remarks>
-public sealed partial class DefaultJobAccessService : IJobAccessService
+public sealed class DefaultJobAccessService : IJobAccessService
 {
     private readonly ILogger<DefaultJobAccessService> _logger;
 
@@ -48,8 +48,6 @@ public sealed partial class DefaultJobAccessService : IJobAccessService
         return Task.FromResult(true);
     }
 
-    [LoggerMessage(Level = LogLevel.Debug,
-        Message = "Job access granted: user={UserId}, jobId={JobId}")]
-    private partial void LogAccessGranted(string userId, string jobId);
+    private void LogAccessGranted(string userId, string jobId) => _logger.LogDebug("Job access granted: user={UserId}, jobId={JobId}", userId, jobId);
 }
 

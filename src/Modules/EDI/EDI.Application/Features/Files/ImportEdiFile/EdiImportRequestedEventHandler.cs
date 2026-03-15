@@ -17,7 +17,7 @@ namespace EDI.Application.Features.Files.ImportEdiFile;
 /// Streams the staged file, parses rows using the config-driven parser, validates each row,
 /// persists results in batches, and updates progress accurately.
 /// </summary>
-public sealed partial class EdiImportRequestedHandler(
+public sealed class EdiImportRequestedHandler(
     IEdiStagingFileRepository repository,
     IEdiStorageService storageService,
     IEdiFileTypeConfigRepository fileTypeConfigRepository,
@@ -372,35 +372,19 @@ public sealed partial class EdiImportRequestedHandler(
 
     // ── LoggerMessage ─────────────────────────────────────────────────────────
 
-    [LoggerMessage(Level = LogLevel.Information,
-        Message = "EDI import: starting — StagingId={StagingId}, CorrelationId={CorrelationId}")]
-    private static partial void LogProcessingStart(ILogger logger, Guid stagingId, string correlationId);
+    private static void LogProcessingStart(ILogger logger, Guid stagingId, string correlationId) => logger.LogInformation("EDI import: starting — StagingId={StagingId}, CorrelationId={CorrelationId}", stagingId, correlationId);
 
-    [LoggerMessage(Level = LogLevel.Warning,
-        Message = "EDI import: staging file not found — StagingId={StagingId}")]
-    private static partial void LogStagingFileNotFound(ILogger logger, Guid stagingId);
+    private static void LogStagingFileNotFound(ILogger logger, Guid stagingId) => logger.LogWarning("EDI import: staging file not found — StagingId={StagingId}", stagingId);
 
-    [LoggerMessage(Level = LogLevel.Information,
-        Message = "EDI import: completed — StagingId={StagingId}, TotalRows={TotalRows}, ElapsedMs={ElapsedMs}")]
-    private static partial void LogProcessingComplete(ILogger logger, Guid stagingId, int totalRows, long elapsedMs);
+    private static void LogProcessingComplete(ILogger logger, Guid stagingId, int totalRows, long elapsedMs) => logger.LogInformation("EDI import: completed — StagingId={StagingId}, TotalRows={TotalRows}, ElapsedMs={ElapsedMs}", stagingId, totalRows, elapsedMs);
 
-    [LoggerMessage(Level = LogLevel.Information,
-        Message = "EDI import: batch progress — StagingId={StagingId}, Processed={Processed}/{Total}")]
-    private static partial void LogBatchProgress(ILogger logger, Guid stagingId, int processed, int total);
+    private static void LogBatchProgress(ILogger logger, Guid stagingId, int processed, int total) => logger.LogInformation("EDI import: batch progress — StagingId={StagingId}, Processed={Processed}/{Total}", stagingId, processed, total);
 
-    [LoggerMessage(Level = LogLevel.Error,
-        Message = "EDI import: domain import failure — StagingId={StagingId}, ErrorCode={ErrorCode}")]
-    private static partial void LogImportFailed(ILogger logger, Exception ex, Guid stagingId, string errorCode);
+    private static void LogImportFailed(ILogger logger, Exception ex, Guid stagingId, string errorCode) => logger.LogError(ex, "EDI import: domain import failure — StagingId={StagingId}, ErrorCode={ErrorCode}", stagingId, errorCode);
 
-    [LoggerMessage(Level = LogLevel.Warning,
-        Message = "EDI import: cancelled — StagingId={StagingId}")]
-    private static partial void LogImportCancelled(ILogger logger, Guid stagingId);
+    private static void LogImportCancelled(ILogger logger, Guid stagingId) => logger.LogWarning("EDI import: cancelled — StagingId={StagingId}", stagingId);
 
-    [LoggerMessage(Level = LogLevel.Error,
-        Message = "EDI import: unexpected error — StagingId={StagingId}")]
-    private static partial void LogProcessingError(ILogger logger, Exception ex, Guid stagingId);
+    private static void LogProcessingError(ILogger logger, Exception ex, Guid stagingId) => logger.LogError(ex, "EDI import: unexpected error — StagingId={StagingId}", stagingId);
 
-    [LoggerMessage(Level = LogLevel.Error,
-        Message = "EDI import: failed to mark staging file as failed — StagingId={StagingId}")]
-    private static partial void LogFailedToMarkFailed(ILogger logger, Exception ex, Guid stagingId);
+    private static void LogFailedToMarkFailed(ILogger logger, Exception ex, Guid stagingId) => logger.LogError(ex, "EDI import: failed to mark staging file as failed — StagingId={StagingId}", stagingId);
 }

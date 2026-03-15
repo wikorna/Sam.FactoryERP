@@ -15,7 +15,7 @@ namespace Notification.Infrastructure.Consumers;
 /// The Angular print-status panel subscribes to this event type and updates its
 /// "queued / in-progress / done" counters in real time.
 /// </remarks>
-public sealed partial class ShipmentBatchPrintQueuedSignalRConsumer(
+public sealed class ShipmentBatchPrintQueuedSignalRConsumer(
     INotificationDispatcher dispatcher,
     ILogger<ShipmentBatchPrintQueuedSignalRConsumer> logger)
     : IConsumer<ShipmentItemPrintQueuedEvent>
@@ -47,13 +47,16 @@ public sealed partial class ShipmentBatchPrintQueuedSignalRConsumer(
         LogPushed(logger, msg.BatchId, msg.ApprovedItemCount);
     }
 
-    [LoggerMessage(Level = LogLevel.Debug,
-        Message = "Consuming ShipmentItemPrintQueuedEvent: BatchId={BatchId}, Batch={BatchNumber}, Items={ItemCount}")]
-    private static partial void LogConsuming(
-        ILogger l, Guid batchId, string batchNumber, int itemCount);
+    private static readonly Action<ILogger, Guid, int, Exception?> _logPushed =
+        LoggerMessage.Define<Guid, int>(
+            LogLevel.Information,
+            new EventId(4101, nameof(LogPushed)),
+            "Pushed BatchQueued signal for batch {BatchId} ({ItemCount} items) to role:Warehouse.");
 
-    [LoggerMessage(Level = LogLevel.Information,
-        Message = "Pushed BatchQueued signal for batch {BatchId} ({ItemCount} items) to role:Warehouse.")]
-    private static partial void LogPushed(ILogger l, Guid batchId, int itemCount);
+    private static void LogConsuming(ILogger l, Guid batchId, string batchNumber, int itemCount) =>
+        l.LogDebug("Consuming ShipmentItemPrintQueuedEvent: BatchId={BatchId}, Batch={BatchNumber}, Items={ItemCount}", batchId, batchNumber, itemCount);
+
+    private static void LogPushed(ILogger logger, Guid batchId, int itemCount) =>
+        _logPushed(logger, batchId, itemCount, null);
 }
 

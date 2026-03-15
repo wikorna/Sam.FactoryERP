@@ -269,7 +269,7 @@ builder.Services.AddFactoryErpMessaging<LabelingDbContext>(
 var allowedOrigins = builder.Configuration
     .GetSection("AllowedOrigins")
     .Get<string[]>()
-    ?? ["http://localhost:4200", "https://localhost:4200"];
+    ?? ["http://localhost:4200", "https://localhost:4201"];
 
 builder.Services.AddCors(options =>
 {

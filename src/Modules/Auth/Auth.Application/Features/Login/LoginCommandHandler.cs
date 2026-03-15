@@ -14,7 +14,7 @@ namespace Auth.Application.Features.Login;
 /// Returns <see cref="LoginResult"/> (Either pattern) instead of throwing
 /// so the controller can return lockout metadata without exposing user existence.
 /// </summary>
-public sealed partial class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResult>
+public sealed class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResult>
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IAuthDbContext _db;
@@ -135,11 +135,7 @@ public sealed partial class LoginCommandHandler : IRequestHandler<LoginCommand, 
         return Convert.ToHexStringLower(bytes);
     }
 
-    [LoggerMessage(Level = LogLevel.Warning,
-        Message = "Login failed for user '{Username}': {Reason}")]
-    private static partial void LogLoginFailed(ILogger logger, string username, string reason);
+    private static void LogLoginFailed(ILogger logger, string username, string reason) => logger.LogWarning("Login failed for user '{Username}': {Reason}", username, reason);
 
-    [LoggerMessage(Level = LogLevel.Information,
-        Message = "Login succeeded for UserId={UserId}, Username='{Username}'")]
-    private static partial void LogLoginSuccess(ILogger logger, Guid userId, string username);
+    private static void LogLoginSuccess(ILogger logger, Guid userId, string username) => logger.LogInformation("Login succeeded for UserId={UserId}, Username='{Username}'", userId, username);
 }

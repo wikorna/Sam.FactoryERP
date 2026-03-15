@@ -10,7 +10,7 @@ namespace Auth.Application.Features.Logout;
 /// Revokes refresh token session and blacklists the current access token JTI
 /// so it cannot be replayed until natural expiry.
 /// </summary>
-public sealed partial class LogoutCommandHandler(
+public sealed class LogoutCommandHandler(
     IAuthDbContext db,
     IRefreshTokenService refreshTokenService,
     IJwtTokenService jwtTokenService,
@@ -48,9 +48,7 @@ public sealed partial class LogoutCommandHandler(
         }
     }
 
-    [LoggerMessage(Level = LogLevel.Information, Message = "Refresh token revoked via logout for UserId={UserId}")]
-    private static partial void LogRefreshTokenRevoked(ILogger logger, Guid userId);
+    private static void LogRefreshTokenRevoked(ILogger logger, Guid userId) => logger.LogInformation("Refresh token revoked via logout for UserId={UserId}", userId);
 
-    [LoggerMessage(Level = LogLevel.Information, Message = "Access token JTI blacklisted: {Jti}")]
-    private static partial void LogJtiBlacklisted(ILogger logger, string jti);
+    private static void LogJtiBlacklisted(ILogger logger, string jti) => logger.LogInformation("Access token JTI blacklisted: {Jti}", jti);
 }

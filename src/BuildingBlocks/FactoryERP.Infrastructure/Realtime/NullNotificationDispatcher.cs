@@ -9,7 +9,7 @@ namespace FactoryERP.Infrastructure.Realtime;
 /// All calls are logged at <c>Debug</c> level and completed synchronously so
 /// callers can depend on <c>INotificationDispatcher</c> without branching.
 /// </summary>
-public sealed partial class NullNotificationDispatcher : INotificationDispatcher
+public sealed class NullNotificationDispatcher : INotificationDispatcher
 {
     private readonly ILogger<NullNotificationDispatcher> _logger;
 
@@ -48,20 +48,12 @@ public sealed partial class NullNotificationDispatcher : INotificationDispatcher
 
     // ── Analyzer-compliant log helpers ───────────────────────────────────────
 
-    [LoggerMessage(Level = LogLevel.Debug,
-        Message = "NullDispatcher: would notify user {UserId} with event {EventType}")]
-    private partial void LogUser(string userId, string eventType);
+    private void LogUser(string userId, string eventType) => _logger.LogDebug("NullDispatcher: would notify user {UserId} with event {EventType}", userId, eventType);
 
-    [LoggerMessage(Level = LogLevel.Debug,
-        Message = "NullDispatcher: would notify role {Role} with event {EventType}")]
-    private partial void LogRole(string role, string eventType);
+    private void LogRole(string role, string eventType) => _logger.LogDebug("NullDispatcher: would notify role {Role} with event {EventType}", role, eventType);
 
-    [LoggerMessage(Level = LogLevel.Debug,
-        Message = "NullDispatcher: would broadcast event {EventType}")]
-    private partial void LogBroadcast(string eventType);
+    private void LogBroadcast(string eventType) => _logger.LogDebug("NullDispatcher: would broadcast event {EventType}", eventType);
 
-    [LoggerMessage(Level = LogLevel.Debug,
-        Message = "NullDispatcher: would send [{Level}] toast to user {UserId}")]
-    private partial void LogToast(string userId, string level);
+    private void LogToast(string userId, string level) => _logger.LogDebug("NullDispatcher: would send [{Level}] toast to user {UserId}", userId, level);
 }
 

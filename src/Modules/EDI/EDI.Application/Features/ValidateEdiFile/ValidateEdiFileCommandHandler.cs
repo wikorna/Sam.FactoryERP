@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 
 namespace EDI.Application.Features.ValidateEdiFile;
 
-public sealed partial class ValidateEdiFileCommandHandler(
+public sealed class ValidateEdiFileCommandHandler(
     IEdiFileJobRepository jobs,
     IEdiFileTypeConfigRepository configRepo,
     IStagingRepository staging,
@@ -148,7 +148,6 @@ public sealed partial class ValidateEdiFileCommandHandler(
         return errors;
     }
 
-    [LoggerMessage(Level = LogLevel.Information, Message = "EDI validation complete: JobId={JobId}, Total={Total}, Valid={Valid}, Invalid={Invalid}")]
-    private static partial void LogValidationComplete(ILogger logger, Guid jobId, int total, int valid, int invalid);
+    private static void LogValidationComplete(ILogger logger, Guid jobId, int total, int valid, int invalid) => logger.LogInformation("EDI validation complete: JobId={JobId}, Total={Total}, Valid={Valid}, Invalid={Invalid}", jobId, total, valid, invalid);
 }
 

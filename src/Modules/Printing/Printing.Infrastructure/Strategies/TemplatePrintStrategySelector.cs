@@ -9,7 +9,7 @@ namespace Printing.Infrastructure.Strategies;
 /// <see cref="LabelTemplateSpec.Version"/> of the resolved template.
 /// Falls back to the first registered strategy when no exact version match is found.
 /// </summary>
-public sealed partial class TemplatePrintStrategySelector(
+public sealed class TemplatePrintStrategySelector(
     IEnumerable<ITemplatePrintStrategy> strategies,
     ILogger<TemplatePrintStrategySelector> logger)
     : ITemplatePrintStrategySelector
@@ -37,9 +37,6 @@ public sealed partial class TemplatePrintStrategySelector(
         return fallback;
     }
 
-    [LoggerMessage(Level = LogLevel.Warning,
-        Message = "No strategy found for template version '{Version}'. Falling back to '{FallbackStrategy}'.")]
-    private static partial void LogFallbackStrategy(
-        ILogger logger, string version, string fallbackStrategy);
+    private static void LogFallbackStrategy(ILogger logger, string version, string fallbackStrategy) => logger.LogWarning("No strategy found for template version '{Version}'. Falling back to '{FallbackStrategy}'.", version, fallbackStrategy);
 }
 

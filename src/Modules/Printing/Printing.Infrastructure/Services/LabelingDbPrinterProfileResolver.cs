@@ -9,7 +9,7 @@ namespace Printing.Infrastructure.Services;
 /// <summary>
 /// Resolves printer connection and media profiles from <c>labeling.Printers</c>.
 /// </summary>
-public sealed partial class LabelingDbPrinterProfileResolver(
+public sealed class LabelingDbPrinterProfileResolver(
     ILabelingDbContext dbContext,
     ILogger<LabelingDbPrinterProfileResolver> logger)
     : IPrinterProfileResolver
@@ -47,9 +47,6 @@ public sealed partial class LabelingDbPrinterProfileResolver(
         };
     }
 
-    [LoggerMessage(Level = LogLevel.Debug,
-        Message = "Printer profile resolved: Id={PrinterId}, Name={Name}, Host={Host}, Port={Port}")]
-    private static partial void LogResolved(
-        ILogger logger, Guid printerId, string name, string host, int port);
+    private static void LogResolved(ILogger logger, Guid printerId, string name, string host, int port) => logger.LogDebug("Printer profile resolved: Id={PrinterId}, Name={Name}, Host={Host}, Port={Port}", printerId, name, host, port);
 }
 

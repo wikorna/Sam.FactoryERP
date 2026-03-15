@@ -20,7 +20,7 @@ public static class DependencyInjection
         // Database
         services.AddDbContext<EdiDbContext>(options =>
             options.UseNpgsql(
-                configuration.GetConnectionString("EdiDatabase"),
+                configuration.GetConnectionString("DefaultConnection"),
                 b => b.MigrationsHistoryTable("__EFMigrationsHistory", "edi")));
 
         // Repositories

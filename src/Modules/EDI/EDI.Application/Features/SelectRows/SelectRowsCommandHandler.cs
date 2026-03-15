@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 
 namespace EDI.Application.Features.SelectRows;
 
-public sealed partial class SelectRowsCommandHandler(
+public sealed class SelectRowsCommandHandler(
     IEdiFileJobRepository jobs,
     IStagingRepository staging,
     ILogger<SelectRowsCommandHandler> logger)
@@ -45,10 +45,8 @@ public sealed partial class SelectRowsCommandHandler(
         return new SelectRowsResponse(job.Id, totalCount);
     }
 
-    [LoggerMessage(Level = LogLevel.Information, Message = "EDI row selection: JobId={JobId}, Count={Count}, Selected={IsSelected}")]
-    private static partial void LogRowSelection(ILogger logger, Guid jobId, int count, bool isSelected);
+    private static void LogRowSelection(ILogger logger, Guid jobId, int count, bool isSelected) => logger.LogInformation("EDI row selection: JobId={JobId}, Count={Count}, Selected={IsSelected}", jobId, count, isSelected);
 
-    [LoggerMessage(Level = LogLevel.Information, Message = "EDI select all: JobId={JobId}, Count={Count}, Selected={IsSelected}")]
-    private static partial void LogSelectAll(ILogger logger, Guid jobId, int count, bool isSelected);
+    private static void LogSelectAll(ILogger logger, Guid jobId, int count, bool isSelected) => logger.LogInformation("EDI select all: JobId={JobId}, Count={Count}, Selected={IsSelected}", jobId, count, isSelected);
 }
 

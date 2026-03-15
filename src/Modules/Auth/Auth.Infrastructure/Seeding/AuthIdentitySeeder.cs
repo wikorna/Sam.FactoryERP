@@ -267,39 +267,27 @@ public static partial class AuthIdentitySeeder
 
     // ── High-performance LoggerMessage delegates ─────────────────────────────
 
-    [LoggerMessage(Level = LogLevel.Information, Message = "Auth dev-user seeding started")]
-    private static partial void LogSeedingStarted(ILogger logger);
+    private static void LogSeedingStarted(ILogger logger) => logger.LogInformation("Auth dev-user seeding started");
 
-    [LoggerMessage(Level = LogLevel.Information, Message = "Auth dev-user '{UserName}' already exists (Id={UserId}), skipping creation")]
-    private static partial void LogUserAlreadyExists(ILogger logger, string userName, Guid userId);
+    private static void LogUserAlreadyExists(ILogger logger, string userName, Guid userId) => logger.LogInformation("Auth dev-user '{UserName}' already exists (Id={UserId}), skipping creation", userName, userId);
 
-    [LoggerMessage(Level = LogLevel.Warning, Message = "Auth dev-user fix-up failed: {Errors}")]
-    private static partial void LogFixUpFailed(ILogger logger, string errors);
+    private static void LogFixUpFailed(ILogger logger, string errors) => logger.LogWarning("Auth dev-user fix-up failed: {Errors}", errors);
 
-    [LoggerMessage(Level = LogLevel.Information, Message = "Auth dev-user flags updated (EmailConfirmed, IsActive)")]
-    private static partial void LogFixUpApplied(ILogger logger);
+    private static void LogFixUpApplied(ILogger logger) => logger.LogInformation("Auth dev-user flags updated (EmailConfirmed, IsActive)");
 
-    [LoggerMessage(Level = LogLevel.Error, Message = "Auth dev-user creation failed: {Errors}")]
-    private static partial void LogCreationFailed(ILogger logger, string errors);
+    private static void LogCreationFailed(ILogger logger, string errors) => logger.LogError("Auth dev-user creation failed: {Errors}", errors);
 
-    [LoggerMessage(Level = LogLevel.Information, Message = "Auth dev-user '{UserName}' created successfully (Id={UserId})")]
-    private static partial void LogUserCreated(ILogger logger, string userName, Guid userId);
+    private static void LogUserCreated(ILogger logger, string userName, Guid userId) => logger.LogInformation("Auth dev-user '{UserName}' created successfully (Id={UserId})", userName, userId);
 
-    [LoggerMessage(Level = LogLevel.Information, Message = "Auth role '{RoleName}' created")]
-    private static partial void LogRoleCreated(ILogger logger, string roleName);
+    private static void LogRoleCreated(ILogger logger, string roleName) => logger.LogInformation("Auth role '{RoleName}' created", roleName);
 
-    [LoggerMessage(Level = LogLevel.Warning, Message = "Auth role '{RoleName}' creation failed: {Errors}")]
-    private static partial void LogRoleCreationFailed(ILogger logger, string roleName, string errors);
+    private static void LogRoleCreationFailed(ILogger logger, string roleName, string errors) => logger.LogWarning("Auth role '{RoleName}' creation failed: {Errors}", roleName, errors);
 
-    [LoggerMessage(Level = LogLevel.Information, Message = "Auth user '{UserName}' assigned to role '{RoleName}'")]
-    private static partial void LogUserRoleAssigned(ILogger logger, string userName, string roleName);
+    private static void LogUserRoleAssigned(ILogger logger, string userName, string roleName) => logger.LogInformation("Auth user '{UserName}' assigned to role '{RoleName}'", userName, roleName);
 
-    [LoggerMessage(Level = LogLevel.Information, Message = "Seeded {Count} app definition(s)")]
-    private static partial void LogAppsSeeded(ILogger logger, int count);
+    private static void LogAppsSeeded(ILogger logger, int count) => logger.LogInformation("Seeded {Count} app definition(s)", count);
 
-    [LoggerMessage(Level = LogLevel.Information, Message = "Seeded {Count} role-app access mapping(s)")]
-    private static partial void LogRoleAppMappingsSeeded(ILogger logger, int count);
+    private static void LogRoleAppMappingsSeeded(ILogger logger, int count) => logger.LogInformation("Seeded {Count} role-app access mapping(s)", count);
 
-    [LoggerMessage(Level = LogLevel.Warning, Message = "Role '{RoleName}' not found in DB — skipping role-app mapping")]
-    private static partial void LogRoleNotFoundForMapping(ILogger logger, string roleName);
+    private static void LogRoleNotFoundForMapping(ILogger logger, string roleName) => logger.LogWarning("Role '{RoleName}' not found in DB — skipping role-app mapping", roleName);
 }

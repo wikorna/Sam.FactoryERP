@@ -18,7 +18,7 @@ namespace Notification.Infrastructure.Consumers;
 /// No DB row is written. Missed pushes are acceptable: the reviewer can query batch status
 /// via the REST API at any time.
 /// </remarks>
-public sealed partial class ShipmentItemPrintedSignalRConsumer(
+public sealed class ShipmentItemPrintedSignalRConsumer(
     INotificationDispatcher dispatcher,
     ILogger<ShipmentItemPrintedSignalRConsumer> logger)
     : IConsumer<ShipmentItemPrintedEvent>
@@ -62,14 +62,8 @@ public sealed partial class ShipmentItemPrintedSignalRConsumer(
         LogPushed(logger, msg.ItemId, msg.BatchNumber, msg.LineNumber);
     }
 
-    [LoggerMessage(Level = LogLevel.Debug,
-        Message = "Consuming ShipmentItemPrintedEvent: ItemId={ItemId}, Batch={BatchNumber}, Line={Line}")]
-    private static partial void LogConsuming(
-        ILogger l, Guid itemId, string batchNumber, int line);
+    private static void LogConsuming(ILogger l, Guid itemId, string batchNumber, int line) => l.LogDebug("Consuming ShipmentItemPrintedEvent: ItemId={ItemId}, Batch={BatchNumber}, Line={Line}", itemId, batchNumber, line);
 
-    [LoggerMessage(Level = LogLevel.Information,
-        Message = "Pushed ItemPrinted signal for item {ItemId} in batch {BatchNumber} (line {Line}).")]
-    private static partial void LogPushed(
-        ILogger l, Guid itemId, string batchNumber, int line);
+    private static void LogPushed(ILogger l, Guid itemId, string batchNumber, int line) => l.LogInformation("Pushed ItemPrinted signal for item {ItemId} in batch {BatchNumber} (line {Line}).", itemId, batchNumber, line);
 }
 
