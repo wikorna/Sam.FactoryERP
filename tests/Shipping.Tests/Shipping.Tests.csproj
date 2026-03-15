@@ -5,24 +5,23 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
-    <!-- CA1707: underscores in test method names follow xUnit convention -->
+    <!-- CA1707: Underscores in test method names follow xUnit naming convention -->
     <NoWarn>$(NoWarn);CA1707</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="coverlet.collector" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="xunit.v3" />
     <PackageReference Include="xunit.runner.visualstudio" />
-    <PackageReference Include="coverlet.collector" />
     <PackageReference Include="FluentAssertions" />
     <PackageReference Include="NSubstitute" />
-    <PackageReference Include="MassTransit" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../../src/Modules/Printing/Printing.Application/Printing.Application.csproj" />
-    <ProjectReference Include="../../src/Modules/Printing/Printing.Infrastructure/Printing.Infrastructure.csproj" />
+    <ProjectReference Include="../../src/Modules/Shipping/Shipping.Application/Shipping.Application.csproj" />
+    <ProjectReference Include="../../src/Modules/Shipping/Shipping.Infrastructure/Shipping.Infrastructure.csproj" />
     <ProjectReference Include="../../src/Modules/Shipping/Shipping.Domain/Shipping.Domain.csproj" />
   </ItemGroup>
 
@@ -31,4 +30,3 @@
   </ItemGroup>
 
 </Project>
-

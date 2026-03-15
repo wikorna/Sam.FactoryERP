@@ -70,7 +70,7 @@ builder.Services.AddShippingApplication();
 builder.Services.AddShippingInfrastructure(builder.Configuration);
 
 // Printing module — QR payload, template rendering, printer dispatch
-builder.Services.AddPrintingInfrastructure();
+builder.Services.AddPrintingInfrastructure(builder.Configuration);
 
 // Notification module (application handlers + infrastructure services)
 builder.Services.AddNotificationApplication();

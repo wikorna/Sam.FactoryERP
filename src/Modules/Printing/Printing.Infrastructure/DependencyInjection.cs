@@ -1,7 +1,9 @@
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Printing.Application.Abstractions;
 using Printing.Infrastructure.Persistence;
+using Printing.Infrastructure.Repositories;
 using Printing.Infrastructure.Services;
 using Printing.Infrastructure.Strategies;
 
@@ -18,8 +20,17 @@ public static class DependencyInjection
     public static IServiceCollection AddPrintingInfrastructure(
         this IServiceCollection services, IConfiguration configuration)
     {
+        // Persistence
         services.AddDbContext<PrintingDbContext>(options =>
-            options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
+            options.UseNpgsql(
+                configuration.GetConnectionString("DefaultConnection"),
+                b => b.MigrationsHistoryTable("__EFMigrationsHistory", "printing")));
+
+        services.AddScoped<IPrintingDbContext>(sp => sp.GetRequiredService<PrintingDbContext>());
+
+        // Repositories — scoped to match DbContext lifetime
+        services.AddScoped<IPrintRequestRepository, PrintRequestRepository>();
+        services.AddScoped<IPrintJobRepository, PrintJobRepository>();
 
         // QR payload
         services.AddSingleton<IQrPayloadBuilder, ShipmentQrPayloadBuilder>();
@@ -33,8 +44,8 @@ public static class DependencyInjection
 
         // Versioned template strategies
         services.AddSingleton<ITemplatePrintStrategy, V1ShipmentLabelStrategy>();
-        // Register TemplatePrintStrategySelector after all strategies are registered
-        services.AddSingleton<TemplatePrintStrategySelector>();
+        // Register selector after all strategies are registered
+        services.AddSingleton<ITemplatePrintStrategySelector, TemplatePrintStrategySelector>();
 
         return services;
     }

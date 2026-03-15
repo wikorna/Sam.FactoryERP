@@ -50,6 +50,7 @@
   </Folder>
   <Folder Name="/src/Modules/Printing/">
     <Project Path="src/Modules/Printing/Printing.Application/Printing.Application.csproj" />
+    <Project Path="src/Modules/Printing/Printing.Domain/Printing.Domain.csproj" />
     <Project Path="src/Modules/Printing/Printing.Infrastructure/Printing.Infrastructure.csproj" />
   </Folder>
   <Folder Name="/src/Modules/Production/">
@@ -89,9 +90,9 @@
     <Project Path="src/Modules/Auth/Auth.Infrastructure/Auth.Infrastructure.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/Auth.Tests/Auth.Tests.csproj" />
     <Project Path="tests/EDI.Tests/EDI.Tests.csproj" />
     <Project Path="tests/FactoryERP.ArchTests/FactoryERP.ArchTests.csproj" />
-    <Project Path="tests/Auth.Tests/Auth.Tests.csproj" />
     <Project Path="tests/Labeling.Tests/Labeling.Tests.csproj" />
     <Project Path="tests/Notification.Tests/Notification.Tests.csproj" />
     <Project Path="tests/Printing.Tests/Printing.Tests.csproj" />

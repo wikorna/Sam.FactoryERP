@@ -31,7 +31,7 @@ public sealed class ShipmentCsvParserTests
             """;
 
         // Act
-        var result = await _parser.ParseAsync(ToStream(csv));
+        var result = await _parser.ParseAsync(ToStream(csv), TestContext.Current.CancellationToken);
 
         // Assert
         result.IsValid.Should().BeTrue();
@@ -71,7 +71,7 @@ public sealed class ShipmentCsvParserTests
             """;
 
         // Act
-        var result = await _parser.ParseAsync(ToStream(csv));
+        var result = await _parser.ParseAsync(ToStream(csv), TestContext.Current.CancellationToken);
 
         // Assert
         result.IsValid.Should().BeTrue();
@@ -97,7 +97,7 @@ public sealed class ShipmentCsvParserTests
             """;
 
         // Act
-        var result = await _parser.ParseAsync(ToStream(csv));
+        var result = await _parser.ParseAsync(ToStream(csv), TestContext.Current.CancellationToken);
 
         // Assert
         result.IsValid.Should().BeTrue();
@@ -114,7 +114,7 @@ public sealed class ShipmentCsvParserTests
                 + "CUST-A,PART-01,\"Widget \"\"Pro\"\"\",\"The \"\"best\"\" widget\",10\n";
 
         // Act
-        var result = await _parser.ParseAsync(ToStream(csv));
+        var result = await _parser.ParseAsync(ToStream(csv), TestContext.Current.CancellationToken);
 
         // Assert
         result.IsValid.Should().BeTrue();
@@ -137,7 +137,7 @@ public sealed class ShipmentCsvParserTests
             """;
 
         // Act
-        var result = await _parser.ParseAsync(ToStream(csv));
+        var result = await _parser.ParseAsync(ToStream(csv), TestContext.Current.CancellationToken);
 
         // Assert
         result.IsValid.Should().BeFalse();
@@ -160,7 +160,7 @@ public sealed class ShipmentCsvParserTests
             """;
 
         // Act
-        var result = await _parser.ParseAsync(ToStream(csv));
+        var result = await _parser.ParseAsync(ToStream(csv), TestContext.Current.CancellationToken);
 
         // Assert
         result.IsValid.Should().BeFalse();
@@ -179,7 +179,7 @@ public sealed class ShipmentCsvParserTests
             """;
 
         // Act
-        var result = await _parser.ParseAsync(ToStream(csv));
+        var result = await _parser.ParseAsync(ToStream(csv), TestContext.Current.CancellationToken);
 
         // Assert
         result.IsValid.Should().BeFalse();
@@ -199,7 +199,7 @@ public sealed class ShipmentCsvParserTests
             """;
 
         // Act
-        var result = await _parser.ParseAsync(ToStream(csv));
+        var result = await _parser.ParseAsync(ToStream(csv), TestContext.Current.CancellationToken);
 
         // Assert — row still parses successfully, but an error is recorded for LabelCopies
         result.ValidRows.Should().HaveCount(1);
@@ -218,7 +218,7 @@ public sealed class ShipmentCsvParserTests
             """;
 
         // Act
-        var result = await _parser.ParseAsync(ToStream(csv));
+        var result = await _parser.ParseAsync(ToStream(csv), TestContext.Current.CancellationToken);
 
         // Assert
         result.ValidRows.Should().HaveCount(1);
@@ -238,7 +238,7 @@ public sealed class ShipmentCsvParserTests
             """;
 
         // Act
-        var result = await _parser.ParseAsync(ToStream(csv));
+        var result = await _parser.ParseAsync(ToStream(csv), TestContext.Current.CancellationToken);
 
         // Assert
         result.TotalRows.Should().Be(0);
@@ -253,7 +253,7 @@ public sealed class ShipmentCsvParserTests
         const string csv = "CustomerCode,PartNo,ProductName,Description,Quantity\n\nCUST-A,PART-01,Widget,Desc,10\n\n\nCUST-B,PART-02,Widget2,Desc2,20\n";
 
         // Act
-        var result = await _parser.ParseAsync(ToStream(csv));
+        var result = await _parser.ParseAsync(ToStream(csv), TestContext.Current.CancellationToken);
 
         // Assert
         result.TotalRows.Should().Be(2);
@@ -272,7 +272,7 @@ public sealed class ShipmentCsvParserTests
             """;
 
         // Act
-        var result = await _parser.ParseAsync(ToStream(csv));
+        var result = await _parser.ParseAsync(ToStream(csv), TestContext.Current.CancellationToken);
 
         // Assert
         result.TotalRows.Should().Be(3);

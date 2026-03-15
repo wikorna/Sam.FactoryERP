@@ -12,17 +12,12 @@ namespace Printing.Infrastructure.Strategies;
 public sealed partial class TemplatePrintStrategySelector(
     IEnumerable<ITemplatePrintStrategy> strategies,
     ILogger<TemplatePrintStrategySelector> logger)
+    : ITemplatePrintStrategySelector
 {
     private readonly List<ITemplatePrintStrategy> _strategies = strategies.ToList();
 
-    /// <summary>
-    /// Returns the strategy that declares support for <paramref name="version"/>,
-    /// or the first registered strategy as a safe fallback.
-    /// </summary>
-    /// <exception cref="InvalidOperationException">
-    /// Thrown when no strategies are registered at all (misconfiguration).
-    /// </exception>
-    public ITemplatePrintStrategy Select(string version)
+    /// <inheritdoc />
+    public ITemplatePrintStrategy GetStrategy(string version)
     {
         if (_strategies.Count == 0)
             throw new InvalidOperationException(

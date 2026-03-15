@@ -11,14 +11,18 @@
     <ProjectReference Include="..\..\Labeling\Labeling.Application\Labeling.Application.csproj" />
     <ProjectReference Include="..\..\Shipping\Shipping.Application\Shipping.Application.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\FactoryERP.Infrastructure\FactoryERP.Infrastructure.csproj" />
+    <ProjectReference Include="..\Printing.Domain\Printing.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="MassTransit" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
     <PackageReference Include="Polly" />
   </ItemGroup>
 

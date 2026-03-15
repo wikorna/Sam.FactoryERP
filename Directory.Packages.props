@@ -129,10 +129,10 @@
     <!-- RabbitMQ -->
     <PackageVersion Include="RabbitMQ.Client" Version="7.2.1" />
     <!-- MassTransit Core -->
-    <PackageVersion Include="MassTransit" Version="8.5.8" />
-    <PackageVersion Include="MassTransit.RabbitMQ" Version="8.5.8" />
+    <PackageVersion Include="MassTransit" Version="9.0.1" />
+    <PackageVersion Include="MassTransit.RabbitMQ" Version="9.0.1" />
     <!-- EF Core Integration (Outbox/Inbox/Transactional Bus) -->
-    <PackageVersion Include="MassTransit.EntityFrameworkCore" Version="8.5.8" />
+    <PackageVersion Include="MassTransit.EntityFrameworkCore" Version="9.0.1" />
 
     <!-- ===================================================== -->
     <!-- Hangfire                                             -->
@@ -147,24 +147,24 @@
     <!-- ===================================================== -->
     <!-- Testing                                               -->
     <!-- ===================================================== -->
-    <PackageVersion Include="xunit" Version="2.9.2" />
+    <PackageVersion Include="xunit.v3" Version="3.2.2" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5" />
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
-    <PackageVersion Include="coverlet.collector" Version="6.0.4" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.3.0" />
+    <PackageVersion Include="coverlet.collector" Version="8.0.0" />
     <PackageVersion Include="FluentAssertions" Version="8.8.0" />
     <PackageVersion Include="NSubstitute" Version="5.3.0" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.3" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.5" />
     <PackageVersion Include="NetArchTest.Rules" Version="1.3.2" />
     <PackageVersion Include="Moq" Version="4.20.72" />
-    <PackageVersion Include="MockQueryable.Moq" Version="9.0.0" />
+    <PackageVersion Include="MockQueryable.Moq" Version="10.0.2" />
     <PackageVersion Include="Respawn" Version="7.0.0" />
-    <PackageVersion Include="WireMock.Net" Version="1.6.6" />
-    <PackageVersion Include="Bogus" Version="36.1.1" />
-    <PackageVersion Include="Testcontainers.RabbitMq" Version="4.5.0" />
+    <PackageVersion Include="WireMock.Net" Version="2.0.0" />
+    <PackageVersion Include="Bogus" Version="35.6.5" />
+    <PackageVersion Include="Testcontainers.RabbitMq" Version="4.11.0" />
     <!-- ===================================================== -->
     <!-- Analyzers                                             -->
     <!-- ===================================================== -->
     <PackageVersion Include="StyleCop.Analyzers" Version="1.1.118" />
-    <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.18.0.131500" />
+    <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.21.0.135717" />
   </ItemGroup>
 </Project>

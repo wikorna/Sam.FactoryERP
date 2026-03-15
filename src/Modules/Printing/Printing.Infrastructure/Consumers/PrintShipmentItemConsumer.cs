@@ -3,7 +3,6 @@ using MassTransit;
 using Microsoft.Extensions.Logging;
 using Printing.Application.Abstractions;
 using Printing.Application.Models;
-using Printing.Infrastructure.Strategies;
 using Shipping.Application.Abstractions;
 
 namespace Printing.Infrastructure.Consumers;
@@ -18,7 +17,7 @@ namespace Printing.Infrastructure.Consumers;
 ///   <item>Idempotency check — skip if <c>ShipmentBatchItem.IsPrinted</c> is already true.</item>
 ///   <item><see cref="IQrPayloadBuilder.Build"/> — canonical QR content from item fields.</item>
 ///   <item><see cref="ILabelTemplateResolver.ResolveAsync"/> — fetch ZPL template body from DB.</item>
-///   <item><see cref="TemplatePrintStrategySelector.Select"/> → <see cref="ITemplatePrintStrategy.Render"/>
+///   <item><see cref="ITemplatePrintStrategySelector.GetStrategy"/> → <see cref="ITemplatePrintStrategy.Render"/>
 ///         — substitute tokens → <see cref="PrintDocument"/>.</item>
 ///   <item><see cref="IPrinterProfileResolver.ResolveAsync"/> — fetch printer connection from DB.</item>
 ///   <item><see cref="ILabelPrinterClient.PrintAsync"/> — stream ZPL to printer.</item>
@@ -36,7 +35,7 @@ public sealed partial class PrintShipmentItemConsumer(
     ILabelTemplateResolver templateResolver,
     IPrinterProfileResolver printerResolver,
     ILabelPrinterClient printerClient,
-    TemplatePrintStrategySelector strategySelector,
+    ITemplatePrintStrategySelector strategySelector,
     ILogger<PrintShipmentItemConsumer> logger)
     : IConsumer<PrintShipmentItemCommand>
 {
@@ -77,7 +76,7 @@ public sealed partial class PrintShipmentItemConsumer(
             cmd.LabelTemplateId, context.CancellationToken);
 
         // ── 5. Render ZPL via versioned strategy ──────────────────────────
-        var strategy = strategySelector.Select(templateSpec.Version);
+        var strategy = strategySelector.GetStrategy(templateSpec.Version);
         var document = strategy.Render(labelData, qrPayload, templateSpec);
 
         // ── 6. Resolve printer profile ────────────────────────────────────
